@@ -1,503 +1,502 @@
-import React, { useState, useEffect, useRef } from 'react';
 import 'primeicons/primeicons.css';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
-import '../../screens/Datatable.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Button, } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { useHistory } from 'react-router-dom'
-import Button2 from '@mui/material/Button';
-import DeleteOutlineIcon from '@mui/icons-material//DeleteOutline';
 import { Toast } from 'primereact/toast';
-import axios from 'axios'
-import  Modal  from '@mui/material/Modal'
-import ContactosRequests from './Requests/APIs'
-import { ToastContainer, toast } from 'react-toastify';
-
-const useStyles = styled((theme) => ({
-  modal: {
-    position: 'absolute',
-    width: 400,
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: 5,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-  },
-  buttonInput: {
-    border: '1px black solid',
-    backgroundColor: 'white',
-    borderRadius: '4px',
-    width: '100%',
-    padding: theme.spacing(3),
-  },
-}));
-
-function Contactos({ props }) {
-
-  const styles = useStyles();
-  const classes = useStyles();
-  const [modalEliminar, setModalEliminar] = useState(false);
-  const [modalEditar, setModalEditar] = useState(false);
-  const [datas, setDatas] = useState()
-  const [id, setId] = useState()
-  const [userid, setUserid] = useState(1)
-  const [selected, setSelected] = useState([])
-  const [editar, setEditar] = useState()
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [namefilter, setNameFilter] = useState('');
-  const [statusfilter, setStatusFilter] = useState('');
-  const [showfilter, setShowFilter] = useState('');
-  const [isvisible, setIsvisible] = useState('')
-  const [fields, setFields] = useState('')
-  const [name, setName] = useState([])
-  const [nombre, setNombre] = useState('')
-  const [correo, setCorreo] = useState('')
-  const [perfil, setPerfil] = useState()
-  const [ordenModal, setOrdenModal] = useState(false)
-  const [update, setUpdate] = React.useState({
-    active_visibility: true,
-    description: 'test2',
-    id: "1",
-    id_usuario: "1",
-    idbusiness_line: "1",
-    images: [{
-      id: "10",
-      image: 'prueba',
-      name: 'prueba'
-    }],
-    name: 'test2',
-  })
-  let history = useHistory();
-
-  //----------------------------
-  const [loading, setLoading] = useState(true);
-  const [userToDelete, setUserToDelete] = useState()
-  const [userToEdit, setUserToEdit] = useState()
-  const [modalConfirmar, setModalConfirmar] = useState(false)
-  const [active, setActive] = useState(false)
-
-  useEffect(() => {
-    try {
-      ContactosRequests.getAllEmployees().then((data) => {
-        setDatas(data.resultset.map((e) => {
-          console.log("prueba",e);
-          return {
-            ...e,
-           // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
-          }
-        }))
-        setLoading(false)
-      })
-
-    } catch (error) {
-      console.log(error)
-    }
-
-  }, [loading, userToEdit, props])
-  // // ----ELIMINANDO EMPLOYEE ----
-
-  // const peticionDelete = async (rowData) => {
-  //   setUserToDelete(rowData)
-  //   setModalEliminar(true);
-  // }
-
-  // const deleteUser = async (user) => {
-  //   //console.log("USER",user)
-  //   try {
-  //     ContactosRequests.deleteEmployee(user.id_contacto, 45)
-  //       .then((res) => {
-  //         //  console.log("BORRADO",res)
-  //         setDatas(datas.filter(consola => consola.id_contacto !== user.id_contacto));
-  //         toast.success('Contacto eliminado exitosamente', {
-  //           position: "top-right",
-  //           autoClose: 3000,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         setModalEliminar(false)
-  //       })
-  //       .catch((err) => { console.log("error", err) })
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  // const deleteMany = async () => {
-  //   const ids = selected.map((e) => e.id_contacto)
-  //   //console.log(ids)
-
-  //   try {
-  //     for (var i = 0; i < ids.length; i++) {
-  //       ContactosRequests.deleteEmployee(ids[i], 45)
-  //         .then((res) => {
-  //           // console.log("BORRADO",res)
-  //           setDatas(datas.filter(consola => consola.id_contacto !== ids[i]));
-  //           //console.log("DATAS",datas)
-  //           ContactosRequests.getAllEmployees().then((data) => {
-  //             setDatas(data.map((e) => {
-  //               return {
-  //                 ...e,
-  //                 active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
-  //               }
-  //             }))
-
-  //           })
-  //         })
-  //         .catch((err) => { console.log("error", err) })
-  //     }
-  //     setSelected([])
-  //     toast.success('Contactos eliminados exitosamente', {
-  //       position: "top-right",
-  //       autoClose: 3000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //     setModalConfirmar(false)
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  // // ---------------------------------------
-
-  // const peticionUpdate = async () => {
-  //   if (editar.status == "PENDIENTE" || editar.status == "RECHAZADO") {
-  //     abrirCerrarModalStatus()
-  //     abrirCerrarModalEditar()
-  //   } else {
-  //     history.push('/EditarContacto', { datax: editar })
-  //   }
-  // }
-  // const peticionPut = async (user) => {
-  //   if (!/^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i.test(user.email)) {
-  //     toast.error('Correo electrónico no valido.', {
-  //       position: "top-right",
-  //       autoClose: 3000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //     return;
-  //   }
-  //   const updateUser = {
-  //     id: user.id,
-  //     email: user.email,
-  //     id_role: user.id_role,
-  //     id_usuario: 45,
-  //     name: user.name
-  //   }
-  //   try {
-  //     ContactosRequests.updateEmployee(updateUser)
-  //       .then((res) => {
-  //         // console.log("RESPONSE", res)
-  //         toast.success('Actualizado exitosamente.', {
-  //           position: "top-right",
-  //           autoClose: 3000,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: undefined,
-  //         });
-  //         setModalEditar(false)
-  //         ContactosRequests.getAllEmployees().then((data) => {
-  //           setDatas(data.map((e) => {
-  //             return {
-  //               ...e,
-  //               active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
-  //             }
-  //           }))
-
-  //         })
-  //       })
-  //       .catch((e) => { console.log("E", e) })
-  //   } catch (error) {
-  //     console.log("Error", error)
-  //   }
+import { Button } from 'primereact/button';
+import { FileUpload } from 'primereact/fileupload';
+import { Rating } from 'primereact/rating';
+import { Toolbar } from 'primereact/toolbar';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { RadioButton } from 'primereact/radiobutton';
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import  APIs from './Requests/APIs'
+import { Dropdown } from 'primereact/dropdown';
+import { InputNumber } from 'primereact/inputnumber';
 
 
-  // }
 
-  // const handleChange = e => {
-  //   const { name, value } = e.target;
-  //   setUpdate(prevState => ({
-  //     ...prevState,
-  //     [name]: value
-  //   }))
-  //   //console.log(update);
-  // }
+export default function Contactos ()  {
 
 
-  // const updateForm = async () => {
-  //   abrirCerrarModalOrden();
-  //   // console.log('datasss', datas);
-  //   const arr = datas.map((e) => {
-  //     return {
-  //       ...e
-  //     }
-  //   })
-  //   setActive(true)
-  //   try {
-  //     ContactosRequests.SaveOrderServices(arr)
-  //       .then((res) => {
-  //         console.log("RES", res);
-  //         if (res.code == 200) {
-  //           toast.success('Configuración guardada exitosamente', {
-  //             position: "top-right",
-  //             autoClose: 5000,
-  //             hideProgressBar: false,
-  //             closeOnClick: true,
-  //             pauseOnHover: true,
-  //             draggable: true,
-  //             progress: undefined,
-  //           })
-  //           setTimeout(() => {
-  //             ContactosRequests.getAllEmployees().then((data) => {
-  //               setDatas(data.map((e) => {
-  //                 return {
-  //                   ...e,
-  //                   active_visibility: e.active_visibility == true ? "SI" : "NO"
-  //                 }
-  //               }))
-  //               setLoading(false)
-  //             })
-  //             abrirCerrarModalOrden()
-  //             setActive(false)
-  //           }, 3000);
-  //         } else {
-  //           toastErr(res.response)
-  //           setActive(false)
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         setActive(false)
-  //         toastErr('Ocurrió un error al guardar configuración.')
-  //           ;
-  //       })
-  //   } catch (error) {
-  //     setActive(false)
-  //   }
-  // }
+    const [datas, setDatas] = useState();
+    const [datas2, setDatas2] = useState();
+    const [edit, setEdit] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [cargar, setCargar]= useState(false)
+    const [products, setProducts] = useState(null);
+    const [product, setProduct] = useState(null);
+    const [ciudad, setCiudad] = useState(null);
+    const [rango, setRango] = useState(null)
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [deleteCountry, setDeleteCountry] = useState(null);
+    const [paisId, setPaisId] = useState();
+    const [abreviacion, setAbreviacion] = useState(null);
+    const [productDialog, setProductDialog] = useState(false);
+    const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+    const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState(null);
+    const [submitted, setSubmitted] = useState(false);
+    const [globalFilter, setGlobalFilter] = useState(null);
+    const toast = useRef(null);
+    const dt = useRef(null);
 
-  const toastErr = (msg) => {
-    toast.error(msg, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    })
-  }
+    const [departamento, setDepartamento] = useState(null)
+    const [rol, setRol] = useState(null)
+    const [distribucion, setDistribucion] = useState(null)
+    const [telefono, setTelefono] = useState(null)
+    const [email, setEmail] = useState(null)
+    const [nombre, setNombre] = useState(null)
+    const [contraseña, setContraseña] = useState(null)
 
-  const onRowReorder = (e) => {
-    setDatas(e.value);
-  }
-
-  const abrirCerrarModalEditar = () => {
-    setModalEditar(!modalEditar);
-  }
-  const abrirCerrarModalEliminar = () => {
-    setModalEliminar(!modalEliminar);
-  }
-  const abrirCerrarModalConfirmar = (rowData) => {
-    setModalConfirmar(!modalConfirmar);
-  }
-  const [statusModal, setStatusModal] = useState(false)
-  const abrirCerrarModalStatus = () => {
-    setStatusModal(!statusModal)
-  }
-
-  const abrirCerrarModalOrden = () => {
-
-    setOrdenModal(!ordenModal);
-  }
-
-  const bodyOrden = (
-    <div className={styles.modal}>
-      <h2>¿Deseas guardar la configuración?</h2>
-      <div style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', width: '100%', display: 'flex', }}>
-        <Button disabled={active} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }} onClick={console.log("updateForm")}>ACEPTAR</Button>
-        <Button color="secondary" onClick={() => setOrdenModal(false)} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }}>CANCELAR</Button>
-      </div>
-
-    </div>
-  )
-
-  const bodyEliminar = (
-    <div className={styles.modal}>
-      <h2>¿Deseas eliminar el contacto?</h2>
-      <h4>El contacto será eliminado para siempre</h4>
-      <div style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', width: '100%', display: 'flex', }}>
-        <Button onClick={() =>console.log("deleteuser(usertodelete")} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }}>ACEPTAR</Button>
-        <Button color="secondary" onClick={() => setModalEliminar(false)} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }}>CANCELAR</Button>
-      </div>
-
-    </div>
-  )
-
-  const bodyConfirmar = (
-    <div className={styles.modal}>
-      <h2>¿Deseas eliminar los contactos?</h2>
-      <h4>Los contactos serán eliminados para siempre</h4>
-      <div style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', width: '100%', display: 'flex', }}>
-        <Button onClick={() => console.log("deleteMany")} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }}>ACEPTAR</Button>
-        <Button color="secondary" onClick={() => setModalConfirmar(false)} style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }}>CANCELAR</Button>
-
-      </div>
-
-    </div>
-  )
-  const bodyStatus = (
-    <div className={styles.modal}>
-      <h1>El contacto no podrá ser editado hasta ser autorizado o rechazado</h1>
-      <div style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', width: '100%', display: 'flex', }}>
-        <Button color="primary" style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }} onClick={() => setStatusModal(false)}>CONTINUAR</Button>
-      </div>
-    </div>
-  )
-
-  const bodyEditar = (
-    <div className={styles.modal}>
-      <h2>¿Deseas editar el contacto?</h2>
-      <div style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', width: '100%', display: 'flex', }}>
-        <Button color="primary" style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }} onClick={() => console.log("update")}>ACEPTAR</Button>
-        <Button color="primary" style={{ width: '45%', background: '#003DA5', justifyContent: 'center' }} onClick={() => setModalEditar()}>CANCELAR</Button>
-      </div>
-    </div>
-  )
-
-  const actionBodyTemplate = (rowData) => {
-    return (
-      <React.Fragment>
-        <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black' }} icon="pi pi-pencil" className="p-button-rounded"
-          onClick={() => { abrirCerrarModalEditar(); setEditar(rowData) }} />
-        <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black' }}
-          icon="pi pi-trash" className="p-button-rounded" onClick={() => { console.log("delete"); }} />
-      </React.Fragment>
-    );
-  }
-  const header = (
-    <div className="table-header">
-
-      <span className="p-input-icon-left">
-        <i className="pi pi-search" />
-        <InputText type="search" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar" style={{ borderRadius: 0 }} />
-      </span>
-      {selected.length >= 1 ?
-        <>
-          <div style={{ alignItems: 'center', display: 'flex' }}>
-            <Button2
-              onClick={() => { setModalConfirmar(true) }}
-              color="primary"
-              startIcon={<DeleteOutlineIcon />}
-            >
-              Eliminar
-            </Button2>
-          </div>
-        </> : null}
-    </div>
-  );
+    useEffect(() => {
+      try {
+        APIs.getAllCities().then((data) => {
+          setDatas(data.resultset.map((e) => {
+            return {
+              ...e,
+             // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+            }
+          }))
+          setLoading(false)
+        })
   
+      } catch (error) {
+        console.log(error)
+      }
+  
+    }, [loading])
 
+    // const formatCurrency = (value) => {
+    //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    // }
 
-  return (
-
-    <div className="datatable-filter-demo" style={{ marginLeft: '7.5%', marginRight: '5%', }}>
-      <ToastContainer position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover />
-      <div style={{ flexDirection: 'row', justifyContent: 'space-between', display: 'flex', alignItems: 'center' }}>
-        <h1 style={{ color: '#202c52' }}>Usuarios</h1>
-        <Button type="button" label="AGREGAR USUARIO" icon="pi pi-plus" 
-          style={{ height: '50%', backgroundColor: '#202c52', borderColor: 'rgba(0,0,0,0)' }} />
-      </div>
-      <div className="card"> 
-        <DataTable resizableColumns value={datas}   loading={false} selectionMode="checkbox" selection={selected} onSelectionChange={e => (setSelected(e.value))} dataKey="id_contacto"
-          header={header} className="p-datatable-customers" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
-          globalFilter={globalFilter} emptyMessage="No se encontraron usuarios.">
-          <Column selectionMode="multiple" headerStyle={{width: '3em',}}></Column>
-          <Column  headerStyle={{ width: '3em', }}></Column>
-          <Column header="Acciones" body={actionBodyTemplate}
-          ></Column>
-          <Column field="userName" header="Usuario" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains" sortable
-          ></Column>
-          <Column field="userMail" header="Correo" filter filterPlaceholder="Buscar por coreo" filterMatchMode="contains" sortable
-          ></Column>
-          <Column field="departamento" header="Departamento" filter filterPlaceholder="Buscar por departamento" filterMatchMode="contains" sortable style={{ width: '25%' }}
-          ></Column>
-          <Column field="telefono" header="Telefono" filter filterPlaceholder="Buscar por telefono" sortable filterMatchMode="contains"
-          ></Column>        
-        </DataTable>
-        {/* <div style={{ display: 'flex', flexDirection: 'row-reverse', }}>
-          <Button type="button" disabled={active} label="GUARDAR" onClick={() => abrirCerrarModalOrden()}
-            style={{ height: '50%', backgroundColor: '#202c52', borderColor: 'rgba(0,0,0,0)' }} />
-        </div> */}
-
-        <Modal
-          open={modalEditar}
-          onClose={abrirCerrarModalEditar}>
-          {bodyEditar}
-        </Modal>
-
-        <Modal
-          open={modalEliminar}
-          onClose={abrirCerrarModalEliminar}>
-          {bodyEliminar}
-        </Modal>
-
-        <Modal
-          open={modalConfirmar}
-          onClose={abrirCerrarModalConfirmar}>
-          {bodyConfirmar}
-        </Modal>
-        <Modal
-          open={statusModal}
-          onClose={abrirCerrarModalStatus}>
-          {bodyStatus}
-        </Modal>
-        <Modal
-          open={ordenModal}
-          onClose={abrirCerrarModalOrden}>
-          {bodyOrden}
-        </Modal>
-      </div>
-    </div>
-
-  );
-}
-
-const defaultTheme = createTheme({
-  palette: {
-    primary: {
-      main: "#000000",
-    },
-    secondary: {
-      main: "#84BD00",
+    const openNew = () => {
+        setSubmitted(false);
+        setProductDialog(true);
     }
-  },
-})
 
-export default Contactos;
+    const hideDialog = () => {
+        setSubmitted(false);
+        setCiudad("");
+        setAbreviacion("");
+        setRango(null)
+        setEdit(false)
+        setSelectedCountry(null);
+        setProductDialog(false);
+    }
+
+    const hideDeleteProductDialog = () => {
+        setDeleteProductDialog(false);
+    }
+
+    const hideDeleteProductsDialog = () => {
+        setDeleteProductsDialog(false);
+    }
+
+    const saveProduct = () => {
+        setSubmitted(true);
+        const newCountry ={
+          userName: nombre,
+          userMail: email,
+          userPassword: contraseña,
+          telefono: telefono,
+          departamento: departamento,
+          rol: rol,
+          distribucion: distribucion,
+          enabled: true
+          };
+            try{
+               APIs.postCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Creado', life: 3000 });
+                setTimeout(() => {
+                        setProductDialog(false);
+                        setCargar(false)
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                 // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+                                }
+                              }))
+                              setLoading(false)
+                             setDepartamento(null)
+                             setRol(null)
+                             setDistribucion(null)
+                             setTelefono(null)
+                             setEmail(null)
+                             setNombre(null)
+                             setContraseña(null)
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
+    }
+    const editPais = () => {
+        setSubmitted(true);
+        const newCountry ={
+          userId:paisId,
+          userName: nombre,
+          userMail: email,
+          userPassword: contraseña,
+          telefono: telefono,
+          departamento: departamento,
+          rol: rol,
+          distribucion: distribucion,
+          enabled: true
+          };
+            try{
+               APIs.putCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Editado', life: 3000 });
+                setTimeout(() => {
+                        setProductDialog(false);
+                        setLoading(true)
+                        setCargar(false)
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                 // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+                                }
+                              }))
+                              setLoading(false)
+                              setCiudad("")
+                              setSelectedCountry(null)
+                              setAbreviacion("")
+                              setEdit(false)
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
+    }
+
+    const editProduct = (product) => {
+        setPaisId(product.userId)
+        setDepartamento(product.departamento)
+        setRol(product.rol)
+        setDistribucion(product.distribucion)
+        setTelefono(product.telefono)
+        setEmail(product.userMail)
+        setNombre(product.userName)
+        setContraseña(product.userPassword)
+        setEdit(true)
+        setProductDialog(true);
+    }
+
+    const confirmDeleteProduct = (product) => {
+        setProduct(product);
+        setPaisId(product.userId)
+        setDeleteCountry(product.state)
+        setDeleteProductDialog(true);
+    }
+
+    const deleteProduct = () => {
+        const newCountry ={
+          userId:paisId,
+          userName: "hardcode",
+          userMail: "hardcode",
+          userPassword: "hardcode",
+          telefono: "hardcode",
+          departamento: "hardcode",
+          rol: "hardcode",
+          distribucion: "hardcode",
+          enabled: false
+          };
+            try{
+               APIs.deleteCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Eliminado ', life: 3000 });
+                setTimeout(() => {
+                    setCargar(false)
+                    setDeleteProductDialog(false);
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                }
+                              }))
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
+    }
+
+    // const findIndexById = (id) => {
+    //     let index = -1;
+    //     for (let i = 0; i < products.length; i++) {
+    //         if (products[i].id === id) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+
+    //     return index;
+    // }
+
+    // const createId = () => {
+    //     let id = '';
+    //     let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    //     for (let i = 0; i < 5; i++) {
+    //         id += chars.charAt(Math.floor(Math.random() * chars.length));
+    //     }
+    //     return id;
+    // }
+
+    // const importCSV = (e) => {
+    //     const file = e.files[0];
+    //     const reader = new FileReader();
+    //     reader.onload = (e) => {
+    //         const csv = e.target.result;
+    //         const data = csv.split('\n');
+
+    //         // Prepare DataTable
+    //         const cols = data[0].replace(/['"]+/g, '').split(',');
+    //         data.shift();
+
+    //         const importedData = data.map(d => {
+    //             d = d.split(',');
+    //             const processedData = cols.reduce((obj, c, i) => {
+    //                 c = c === 'Status' ? 'inventoryStatus' : (c === 'Reviews' ? 'rating' : c.toLowerCase());
+    //                 obj[c] = d[i].replace(/['"]+/g, '');
+    //                 (c === 'price' || c === 'rating') && (obj[c] = parseFloat(obj[c]));
+    //                 return obj;
+    //             }, {});
+
+    //             processedData['id'] = createId();
+    //             return processedData;
+    //         });
+
+    //         const _products = [...products, ...importedData];
+
+    //         setProducts(_products);
+    //     };
+
+    //     reader.readAsText(file, 'UTF-8');
+    // }
+
+    const exportCSV = () => {
+        dt.current.exportCSV();
+    }
+
+    const confirmDeleteSelected = () => {
+        setDeleteProductsDialog(true);
+    }
+
+    const deleteSelectedProducts = () => {
+        let _products = products.filter(val => !selectedProducts.includes(val));
+        setProducts(_products);
+        setDeleteProductsDialog(false);
+        setSelectedProducts(null);
+        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+    }
+
+
+    const leftToolbarTemplate = () => {
+        return (
+            <React.Fragment>
+                <Button label="Nuevo Usuario" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
+                {/* <Button style={{marginLeft:2}} label="Eliminar Pais" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected}  /> */}
+            </React.Fragment>
+        )
+    }
+
+    const rightToolbarTemplate = () => {
+        return (
+            <React.Fragment>
+                {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
+                <Button label="Descargar" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
+            </React.Fragment>
+        )
+    }
+
+    // const imageBodyTemplate = (rowData) => {
+    //     return <img src={`images/product/${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+    // }
+
+    // const priceBodyTemplate = (rowData) => {
+    //     return formatCurrency(rowData.price);
+    // }
+
+    // const ratingBodyTemplate = (rowData) => {
+    //     return <Rating value={rowData.rating} readOnly cancel={false} />;
+    // }
+
+    // const statusBodyTemplate = (rowData) => {
+    //     return <span className={`product-badge status-${rowData.inventoryStatus.toLowerCase()}`}>{rowData.inventoryStatus}</span>;
+    // }
+
+    const actionBodyTemplate = (rowData) => {
+        return (
+            <React.Fragment>
+                <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black', marginRight:2 }} icon="pi pi-pencil" className="p-button-rounded" 
+                onClick={() => editProduct(rowData)}  />
+                <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black',  }} icon="pi pi-trash" className="p-button-rounded"  onClick={() => confirmDeleteProduct(rowData)} />
+            </React.Fragment>
+        );
+    }
+
+    const header = (
+        <div className="table-header">
+            <h5 className="mx-0 my-1">Administrar Usuarios</h5>
+            <span className="p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
+            </span>
+        </div>
+    );
+    const productDialogFooter = (
+        <React.Fragment>
+            <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={hideDialog} style={{backgroundColor:'#202c52', color:'white'}}/>
+            {edit == false ?<Button 
+            label="Guardar" icon="pi pi-check" className="p-button-text" onClick={saveProduct} style={{backgroundColor:'#e8580e', color:'white'}}
+            loading={cargar} loadingOptions={{ position: 'right' }}/>
+            :<Button 
+            label="Guardar" icon="pi pi-check" className="p-button-text" onClick={editPais} style={{backgroundColor:'#e8580e', color:'white'}}
+            loading={cargar} loadingOptions={{ position: 'right' }}/>}
+        </React.Fragment>
+    );
+    const deleteProductDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+        </React.Fragment>
+    );
+    const deleteProductsDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
+        </React.Fragment>
+    );
+
+    return (
+        <div className="datatable-crud-demo">
+            <Toast ref={toast} />
+
+            <div className="card">
+                <Toolbar className="mb-4 mt-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
+                    dataKey="userId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    currentPageReportTemplate="Mostrar {first} de {totalRecords} usuarios"
+                    globalFilter={globalFilter} header={header} responsiveLayout="scroll">
+                    <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
+                    <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
+                    <Column field="userName" header="Nombre del usuario" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="userMail" header="Correo del usuario" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="distribucion" header="Distribucion del usuario" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                </DataTable>
+            </div>
+
+            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                <div className="field">
+                    <label htmlFor="Base">Departamento </label>
+                    <InputText
+                        value={departamento}
+                        onChange={e => setDepartamento(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !departamento })} />
+                    {submitted && !departamento && <small className="p-error">Departamento es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Nombre">Rol</label>
+                    <InputText
+                        value={rol}
+                        onChange={e => setRol(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !rol })} />
+                    {submitted && !rol && <small className="p-error">Rol es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Distribucion</label>
+                    <InputText
+                        value={distribucion}
+                        onChange={e => setDistribucion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !distribucion })} />
+                    {submitted && !distribucion && <small className="p-error">Distribucion es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Telefono</label>
+                    <InputText
+                        value={telefono}
+                        onChange={e => setTelefono(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefono })} />
+                    {submitted && !telefono && <small className="p-error">Telefono es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Correo electronico</label>
+                    <InputText
+                        value={email}
+                        onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email })} />
+                    {submitted && !email && <small className="p-error">Correo es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Nombre</label>
+                    <InputText
+                        value={nombre}
+                        onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nombre })} />
+                    {submitted && !nombre && <small className="p-error">Nombre es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Contraseña</label>
+                    <InputText
+                        value={contraseña}
+                        onChange={e => setContraseña(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !contraseña })} />
+                    {submitted && !contraseña && <small className="p-error">Contraseña es mandatorio.</small>}
+                </div>
+            </Dialog>
+
+            <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
+                <div className="confirmation-content">
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                    {product && <span> Deseas eliminar la siguiente zona <b>{product.userName}</b>?</span>}
+                </div>
+            </Dialog>
+
+            <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
+                <div className="confirmation-content">
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                    {product && <span>Are you sure you want to delete the selected products?</span>}
+                </div>
+            </Dialog>
+        </div>
+    );
+}
+                
