@@ -1,0 +1,24 @@
+.container {
+    height: 100%;
+    width: 100%;
+    background-color: #202c52;
+    overflow-y: auto;
+    position:absolute;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
+    /* hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* hide scrollbar for chrome, safari and opera */
+  .container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .container p {
+    color: #fff;
+    padding: 20px;
+  }
