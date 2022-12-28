@@ -1,6 +1,5 @@
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css';
-import ReactDOM from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
@@ -12,33 +11,32 @@ import { Rating } from 'primereact/rating';
 import { Toolbar } from 'primereact/toolbar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import  APIs from './Requests/APIs'
 import '../Index.css'
 import '../styles.css'
-
+import { Dropdown } from 'primereact/dropdown';
+import { InputNumber } from 'primereact/inputnumber';
 export default function Clientes ()  {
 
-    let emptyProduct = {
-        id: null,
-        name: '',
-        image: null,
-        description: '',
-        category: null,
-        price: 0,
-        quantity: 0,
-        rating: 0,
-        inventoryStatus: 'INSTOCK'
-    };
+
     const [datas, setDatas] = useState();
+    const [datas2, setDatas2] = useState();
+    const [edit, setEdit] = useState(false);
     const [loading, setLoading] = useState(true)
+    const [cargar, setCargar]= useState(false)
     const [products, setProducts] = useState(null);
+    const [product, setProduct] = useState(null);
+    const [ciudad, setCiudad] = useState(null);
+    const [rango, setRango] = useState(null)
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [deleteCountry, setDeleteCountry] = useState(null);
+    const [paisId, setPaisId] = useState();
+    const [abreviacion, setAbreviacion] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [product, setProduct] = useState(emptyProduct);
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -46,11 +44,11 @@ export default function Clientes ()  {
     const dt = useRef(null);
 
 
+
     useEffect(() => {
       try {
-        APIs.getAllPaises().then((data) => {
+        APIs.getAllCities().then((data) => {
           setDatas(data.resultset.map((e) => {
-            console.log("prueba",e);
             return {
               ...e,
              // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
@@ -70,13 +68,17 @@ export default function Clientes ()  {
     // }
 
     const openNew = () => {
-        setProduct(emptyProduct);
         setSubmitted(false);
         setProductDialog(true);
     }
 
     const hideDialog = () => {
         setSubmitted(false);
+        setCiudad("");
+        setAbreviacion("");
+        setRango(null)
+        setEdit(false)
+        setSelectedCountry(null);
         setProductDialog(false);
     }
 
@@ -90,99 +92,205 @@ export default function Clientes ()  {
 
     const saveProduct = () => {
         setSubmitted(true);
-
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = {...product};
-            if (product.id) {
-                const index = findIndexById(product.id);
-
-                _products[index] = _product;
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-            }
-            else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-            }
-
-            setProducts(_products);
-            setProductDialog(false);
-            setProduct(emptyProduct);
-        }
+        const newCountry ={
+            customerName: ciudad,
+            customerBase: abreviacion,
+            customerRadio: rango,
+            enabled: true
+          };
+            try{
+               APIs.postCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Cliente Creado', life: 3000 });
+                setTimeout(() => {
+                        setProductDialog(false);
+                        setCargar(false)
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                 // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+                                }
+                              }))
+                              setLoading(false)
+                              setCiudad("")
+                              setSelectedCountry(null)
+                              setAbreviacion("")
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
+    }
+    const editPais = () => {
+        setSubmitted(true);
+        const newCountry ={
+            customerId: paisId,
+            customerName: ciudad,
+            customerBase: abreviacion,
+            customerRadio: rango,
+            enabled: true
+          };
+            try{
+               APIs.putCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Cliente Editado', life: 3000 });
+                setTimeout(() => {
+                        setProductDialog(false);
+                        setLoading(true)
+                        setCargar(false)
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                 // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+                                }
+                              }))
+                              setLoading(false)
+                              setCiudad("")
+                              setSelectedCountry(null)
+                              setAbreviacion("")
+                              setEdit(false)
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
     }
 
     const editProduct = (product) => {
-        setProduct({...product});
+        setCiudad(product.customerName)
+        setPaisId(product.customerId)
+        setAbreviacion(product.customerBase)
+        setRango(product.customerRadio)
+        console.log('test',product);
+        setEdit(true)
         setProductDialog(true);
     }
 
     const confirmDeleteProduct = (product) => {
         setProduct(product);
+        setPaisId(product.customerId)
+        setDeleteCountry(product.state)
         setDeleteProductDialog(true);
     }
 
     const deleteProduct = () => {
-        let _products = products.filter(val => val.id !== product.id);
-        setProducts(_products);
-        setDeleteProductDialog(false);
-        setProduct(emptyProduct);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+        const newCountry ={
+            customerName: "hardcode",
+            customerId: paisId,
+            enabled: false,
+            customerBase: "hardcode",
+            customerRadio: 1
+          };
+            try{
+               APIs.deleteCity(newCountry)
+              .then((res)=>{
+                if(res.codigo == 200){
+                    setCargar(true)
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Cliente Eliminado', life: 3000 });
+                setTimeout(() => {
+                    setCargar(false)
+                    setDeleteProductDialog(false);
+                        try {
+                            APIs.getAllCities().then((data) => {
+                              setDatas(data.resultset.map((e) => {
+                                return {
+                                  ...e,
+                                }
+                              }))
+                            })
+                      
+                          } catch (error) {
+                            console.log(error)
+                          }
+                    }, 3000);
+                }
+                if(res.codigo == 204){
+                    {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+                    }
+                }
+                 })
+                }catch(error){}
     }
 
-    const findIndexById = (id) => {
-        let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
+    // const findIndexById = (id) => {
+    //     let index = -1;
+    //     for (let i = 0; i < products.length; i++) {
+    //         if (products[i].id === id) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
 
-        return index;
-    }
+    //     return index;
+    // }
 
-    const createId = () => {
-        let id = '';
-        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
+    // const createId = () => {
+    //     let id = '';
+    //     let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    //     for (let i = 0; i < 5; i++) {
+    //         id += chars.charAt(Math.floor(Math.random() * chars.length));
+    //     }
+    //     return id;
+    // }
 
-    const importCSV = (e) => {
-        const file = e.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const csv = e.target.result;
-            const data = csv.split('\n');
+    // const importCSV = (e) => {
+    //     const file = e.files[0];
+    //     const reader = new FileReader();
+    //     reader.onload = (e) => {
+    //         const csv = e.target.result;
+    //         const data = csv.split('\n');
 
-            // Prepare DataTable
-            const cols = data[0].replace(/['"]+/g, '').split(',');
-            data.shift();
+    //         // Prepare DataTable
+    //         const cols = data[0].replace(/['"]+/g, '').split(',');
+    //         data.shift();
 
-            const importedData = data.map(d => {
-                d = d.split(',');
-                const processedData = cols.reduce((obj, c, i) => {
-                    c = c === 'Status' ? 'inventoryStatus' : (c === 'Reviews' ? 'rating' : c.toLowerCase());
-                    obj[c] = d[i].replace(/['"]+/g, '');
-                    (c === 'price' || c === 'rating') && (obj[c] = parseFloat(obj[c]));
-                    return obj;
-                }, {});
+    //         const importedData = data.map(d => {
+    //             d = d.split(',');
+    //             const processedData = cols.reduce((obj, c, i) => {
+    //                 c = c === 'Status' ? 'inventoryStatus' : (c === 'Reviews' ? 'rating' : c.toLowerCase());
+    //                 obj[c] = d[i].replace(/['"]+/g, '');
+    //                 (c === 'price' || c === 'rating') && (obj[c] = parseFloat(obj[c]));
+    //                 return obj;
+    //             }, {});
 
-                processedData['id'] = createId();
-                return processedData;
-            });
+    //             processedData['id'] = createId();
+    //             return processedData;
+    //         });
 
-            const _products = [...products, ...importedData];
+    //         const _products = [...products, ...importedData];
 
-            setProducts(_products);
-        };
+    //         setProducts(_products);
+    //     };
 
-        reader.readAsText(file, 'UTF-8');
-    }
+    //     reader.readAsText(file, 'UTF-8');
+    // }
 
     const exportCSV = () => {
         dt.current.exportCSV();
@@ -200,33 +308,12 @@ export default function Clientes ()  {
         toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
     }
 
-    const onCategoryChange = (e) => {
-        let _product = {...product};
-        _product['category'] = e.value;
-        setProduct(_product);
-    }
-
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _product = {...product};
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    }
-
-    const onInputNumberChange = (e, name) => {
-        const val = e.value || 0;
-        let _product = {...product};
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    }
 
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="Nuevo Cliente" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-                <Button style={{marginLeft:2}} label="Eliminar Cliente" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
+                <Button label="Nuevo Cliente" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
+                {/* <Button style={{marginLeft:2}} label="Eliminar Pais" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected}  /> */}
             </React.Fragment>
         )
     }
@@ -234,8 +321,8 @@ export default function Clientes ()  {
     const rightToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} />
-                <Button label="Exportar Archivo" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+                {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
+                <Button label="Exportar Archivo" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
             </React.Fragment>
         )
     }
@@ -259,8 +346,9 @@ export default function Clientes ()  {
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} style={{marginRight:2}} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black', marginRight:2 }} icon="pi pi-pencil" className="p-button-rounded" 
+                onClick={() => editProduct(rowData)}  />
+                <Button style={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(0,0,0,0)', color: 'black',  }} icon="pi pi-trash" className="p-button-rounded"  onClick={() => confirmDeleteProduct(rowData)} />
             </React.Fragment>
         );
     }
@@ -276,20 +364,25 @@ export default function Clientes ()  {
     );
     const productDialogFooter = (
         <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
+            <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={hideDialog} style={{backgroundColor:'#202c52', color:'white'}}/>
+            {edit == false ?<Button 
+            label="Guardar" icon="pi pi-check" className="p-button-text" onClick={saveProduct} style={{backgroundColor:'#e8580e', color:'white'}}
+            loading={cargar} loadingOptions={{ position: 'right' }}/>
+            :<Button 
+            label="Guardar" icon="pi pi-check" className="p-button-text" onClick={editPais} style={{backgroundColor:'#e8580e', color:'white'}}
+            loading={cargar} loadingOptions={{ position: 'right' }}/>}
         </React.Fragment>
     );
     const deleteProductDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} />
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
         </React.Fragment>
     );
 
@@ -299,68 +392,46 @@ export default function Clientes ()  {
 
             <div className="card">
                 <Toolbar className="mb-4 mt-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
-
-                <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="countryId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
+                    dataKey="customerId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Mostrar {first} de {totalRecords} clientes"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
-                    <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
-                    <Column field="customerName" header="Cliente" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+                    <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
+                    <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
+                    <Column field="customerName" header="Nombre de cliente" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="customerBase" header="Base de cliente" filter filterPlaceholder="Buscar por base" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="customerRadio" header="Radio de cliente" filter filterPlaceholder="Buscar por radio" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Product Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                {product.image && <img src={`images/product/${product.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={product.image} className="product-image block m-auto pb-3" />}
+            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
-                    <label htmlFor="name">Name</label>
-                    <InputText id="name" value={product.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !product.name })} />
-                    {submitted && !product.name && <small className="p-error">Name is required.</small>}
+                    <label htmlFor="Base">Base de cliente</label>
+                    <InputText
+                        value={ciudad}
+                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
+                    {submitted && !ciudad && <small className="p-error">Base es mandatorio.</small>}
                 </div>
                 <div className="field">
-                    <label htmlFor="description">Description</label>
-                    <InputTextarea id="description" value={product.description} onChange={(e) => onInputChange(e, 'description')} required rows={3} cols={20} />
+                    <label htmlFor="Nombre">Nombre de cliente</label>
+                    <InputText
+                        value={abreviacion}
+                        onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
+                    {submitted && !abreviacion && <small className="p-error">Nombre es mandatorio.</small>}
                 </div>
-
                 <div className="field">
-                    <label className="mb-3">Category</label>
-                    <div className="formgrid grid">
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category1" name="category" value="Accessories" onChange={onCategoryChange} checked={product.category === 'Accessories'} />
-                            <label htmlFor="category1">Accessories</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category2" name="category" value="Clothing" onChange={onCategoryChange} checked={product.category === 'Clothing'} />
-                            <label htmlFor="category2">Clothing</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category3" name="category" value="Electronics" onChange={onCategoryChange} checked={product.category === 'Electronics'} />
-                            <label htmlFor="category3">Electronics</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category4" name="category" value="Fitness" onChange={onCategoryChange} checked={product.category === 'Fitness'} />
-                            <label htmlFor="category4">Fitness</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <label htmlFor="price">Price</label>
-                        <InputNumber id="price" value={product.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="USD" locale="en-US" />
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="quantity">Quantity</label>
-                        <InputNumber id="quantity" value={product.quantity} onValueChange={(e) => onInputNumberChange(e, 'quantity')} integeronly />
-                    </div>
+                    <label htmlFor="Rango">Radio de tolerancia (mts) </label>
+                    <InputNumber inputId="inputnumber" className={classNames({ 'p-invalid': submitted && !rango })}
+                     value={rango} onChange={(e) => setRango(e.value)} />
+                    {submitted && !rango && <small className="p-error">Rango es mandatorio.</small>}
                 </div>
             </Dialog>
 
-            <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
+            <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span>Are you sure you want to delete <b>{product.name}</b>?</span>}
+                    {product && <span> Deseas eliminar el siguiente cliente <b>{product.customerName}</b>?</span>}
                 </div>
             </Dialog>
 

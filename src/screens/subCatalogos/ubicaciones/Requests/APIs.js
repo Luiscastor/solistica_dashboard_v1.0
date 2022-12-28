@@ -1,41 +1,69 @@
 import axios from 'axios';
 
- const baseUrl = 'http://108.175.15.104:8080/api/location/getLocation/all'
+ const baseUrl = 'http://108.175.15.104:8080/api'
 
-const getAllPaises = async () => {
+const getAllCities = async () => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.get(`${baseUrl}`,{  headers: { Authorization: `${tokenApp}` }});
+    const {data: res} = await axios.get(`${baseUrl}/locationType/getLocationType/all`,{  headers: { Authorization: `${tokenApp}` }});
+    return res;
+  };
+  const getAllStates = async () => {
+    const tokenApp = window.localStorage.getItem('token') 
+    const {data: res} = await axios.get(`${baseUrl}/state/getState/all/enabled`,{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
 
-  const deleteEmployee = async (id_contacto,userID) => {
-    const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.delete(`${baseUrl}/${id_contacto}`,{  headers: { Authorization: `${tokenApp}` }});
-    return res;
-  };
+  const deleteCity = async ({
+    locationTypeId,
+    locationTypedescription,
+    locationTypeName,
+    enabled
+    }) => {
+      const tokenApp = window.localStorage.getItem('token') 
+      const {data: res} = await axios.patch(`${baseUrl}/locationType/update`,{ 
+        locationTypeId,
+        locationTypedescription,
+        locationTypeName,
+        enabled
+       },{  headers: { Authorization: `${tokenApp}` }});
+      return res;
+    };
+
+  const putCity = async ({
+    locationTypeId,
+    locationTypedescription,
+    locationTypeName,
+    enabled
+    }) => {
+      const tokenApp = window.localStorage.getItem('token') 
+      const {data: res} = await axios.patch(`${baseUrl}/locationType/update`,{ 
+        locationTypeId,
+        locationTypedescription,
+        locationTypeName,
+        enabled
+       },{  headers: { Authorization: `${tokenApp}` }});
+      return res;
+    };
 
 
-
-  const postNewEmployee = async ({
-      
-      id_usuario, 
-      active_visibility,
-      email,
-      name,
-      phone_number,
-
+  const postCity = async ({
+    locationTypedescription,
+    locationTypeName,
+    enabled
   }) => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.post(`${baseUrl}`,{ 
-      active_visibility,
-      email,
-      name,
-      phone_number, },{  headers: { Authorization: `${tokenApp}` }});
+    const {data: res} = await axios.post(`${baseUrl}/locationType/save`,{ 
+      locationTypedescription,
+      locationTypeName,
+      enabled
+     },{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
 
   export default {
-    getAllPaises,
-    deleteEmployee,
-    postNewEmployee,
+    getAllCities,
+    deleteCity,
+    putCity,
+    postCity,
+    getAllStates
     }

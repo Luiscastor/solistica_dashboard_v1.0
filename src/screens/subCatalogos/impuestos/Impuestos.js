@@ -197,10 +197,10 @@ export default function Impuestos ()  {
 
     const deleteProduct = () => {
         const newCountry ={
-            //taxTypeName: "hardcode",
+            taxTypeName: "hardcode",
             taxTypeId: paisId,
             enabled: false,
-            //taxTypeName: "hardcode"
+            taxTypeDescription: "hardcode"
           };
             try{
                APIs.deleteCity(newCountry)
@@ -411,8 +411,8 @@ export default function Impuestos ()  {
                     <label htmlFor="Ciudad">Nombre - Tipo de impuesto</label>
                     <InputText
                         value={abreviacion}
-                        onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Nombre es mandatorio.</small>}
+                        onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
+                    {submitted && !abreviacion && <small className="p-error">Nombre es mandatorio.</small>}
                 </div>
             </Dialog>
 

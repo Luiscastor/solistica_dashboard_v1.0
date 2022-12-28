@@ -1,41 +1,75 @@
 import axios from 'axios';
 
- const baseUrl = 'http://108.175.15.104:8080/api/customer/getCustomer/all'
+ const baseUrl = 'http://108.175.15.104:8080/api'
 
-const getAllPaises = async () => {
+const getAllCities = async () => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.get(`${baseUrl}`,{  headers: { Authorization: `${tokenApp}` }});
+    const {data: res} = await axios.get(`${baseUrl}/customer/getCustomer/all`,{  headers: { Authorization: `${tokenApp}` }});
+    return res;
+  };
+  const getAllStates = async () => {
+    const tokenApp = window.localStorage.getItem('token') 
+    const {data: res} = await axios.get(`${baseUrl}/state/getState/all/enabled`,{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
 
-  const deleteEmployee = async (id_contacto,userID) => {
-    const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.delete(`${baseUrl}/${id_contacto}`,{  headers: { Authorization: `${tokenApp}` }});
-    return res;
-  };
+  const deleteCity = async ({
+    customerId,
+    customerName,
+    customerBase,
+    customerRadio,
+    enabled
+    }) => {
+      const tokenApp = window.localStorage.getItem('token') 
+      const {data: res} = await axios.patch(`${baseUrl}/customer/update`,{ 
+        customerId,
+        customerName,
+        customerBase,
+        customerRadio,
+        enabled
+       },{  headers: { Authorization: `${tokenApp}` }});
+      return res;
+    };
+
+  const putCity = async ({
+    customerId,
+    customerName,
+    customerBase,
+    customerRadio,
+    enabled
+    }) => {
+      const tokenApp = window.localStorage.getItem('token') 
+      const {data: res} = await axios.patch(`${baseUrl}/customer/update`,{ 
+        customerId,
+        customerName,
+        customerBase,
+        customerRadio,
+        enabled
+       },{  headers: { Authorization: `${tokenApp}` }});
+      return res;
+    };
 
 
-
-  const postNewEmployee = async ({
-      
-      id_usuario, 
-      active_visibility,
-      email,
-      name,
-      phone_number,
-
+  const postCity = async ({
+    customerName,
+    customerBase,
+    customerRadio,
+    enabled
   }) => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.post(`${baseUrl}`,{ 
-      active_visibility,
-      email,
-      name,
-      phone_number, },{  headers: { Authorization: `${tokenApp}` }});
+    const {data: res} = await axios.post(`${baseUrl}/customer/save`,{ 
+      customerName,
+      customerBase,
+      customerRadio,
+      enabled
+     },{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
 
   export default {
-    getAllPaises,
-    deleteEmployee,
-    postNewEmployee,
+    getAllCities,
+    deleteCity,
+    putCity,
+    postCity,
+    getAllStates
     }
