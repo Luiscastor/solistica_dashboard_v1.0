@@ -54,6 +54,13 @@ export default function UbicacionesM ()  {
     const [nombre, setNombre] = useState(null)
     const [contraseña, setContraseña] = useState(null)
 
+
+    const [value1, setValue1] = useState(null)
+    const [value2, setValue2] = useState(null)
+    const [value3, setValue3] = useState(null)
+    const [value4, setValue4] = useState(null)
+    const [value5, setValue5] = useState(null)
+
     useEffect(() => {
       try {
         APIs.getAllCities().then((data) => {
@@ -236,12 +243,12 @@ export default function UbicacionesM ()  {
     }
 
     const editProduct = (product) => {
-        setPaisId(product.userId)
-        setDepartamento(product.departamento)
-        setRol(product.rol)
-        setDistribucion(product.distribucion)
-        setTelefono(product.telefono)
-        setEmail(product.userMail)
+        setPaisId(product.customerLocationId)
+        setValue1(product.departamento)
+        setValue2(product.rol)
+        setValue3(product.distribucion)
+        setValue4(product.telefono)
+        setValue5(product.userMail)
         setNombre(product.userName)
         setContraseña(product.userPassword)
         setEdit(true)
@@ -481,12 +488,21 @@ export default function UbicacionesM ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '650px' }} header="Detalles de la ubicacion" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '1000px' }} header="Detalles de la ubicacion" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div style={{width:'100%',background:'red', flexDirection:'row',alignItems:'center', display:'flex', justifyContent:'center'}}>
-                <div style={{width:'45%',background:'yellow' }}>
+                <div style={{width:'30%',background:'yellow' }}>
+                <div className="field">
+                    <label htmlFor="Base">Departamento </label>
+                    <InputText
+                        value={value1}
+                        onChange={e => setValue1(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value1 })} />
+                    {submitted && !value1 && <small className="p-error">Departamento es mandatorio.</small>}
+                </div>
+                </div>
+                <div style={{width:'30%',background:'yellow' }}>
                     <h1>test</h1>
                 </div>
-                <div style={{width:'45%',background:'yellow' }}>
+                <div style={{width:'30%',background:'yellow' }}>
                     <h1>test</h1>
                 </div>
                 </div>
