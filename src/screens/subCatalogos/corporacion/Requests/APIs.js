@@ -9,32 +9,26 @@ const getAllPaises = async () => {
   };
 
   const deleteCountry = async ({
-    countryName,
-    countryCode, 
-    countryId,
+    corporationId,
     enabled,
     }) => {
       const tokenApp = window.localStorage.getItem('token') 
       const {data: res} = await axios.patch(`${baseUrl}/corporation/update/enabled`,{ 
-        countryName,
-        countryCode, 
-        countryId,
+        corporationId,
         enabled,
        },{  headers: { Authorization: `${tokenApp}` }});
       return res;
     };
 
   const putCountry = async ({
-    countryName,
-    countryCode, 
-    countryId,
+    corporationName,
+    corporationId,
     enabled,
     }) => {
       const tokenApp = window.localStorage.getItem('token') 
       const {data: res} = await axios.patch(`${baseUrl}/corporation/update`,{ 
-        countryId,
-        countryName, 
-        countryCode,
+        corporationId,
+        corporationName, 
         enabled
        },{  headers: { Authorization: `${tokenApp}` }});
       return res;
@@ -42,13 +36,13 @@ const getAllPaises = async () => {
 
 
   const postCountry = async ({
-  countryName, 
-  countryCode,
+    corporationName, 
+    enabled
   }) => {
     const tokenApp = window.localStorage.getItem('token') 
     const {data: res} = await axios.post(`${baseUrl}/corporation/save`,{ 
-      countryName, 
-      countryCode,
+      corporationName, 
+      enabled
      },{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };

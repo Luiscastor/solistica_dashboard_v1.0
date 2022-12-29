@@ -91,7 +91,7 @@ export default function Corporacion ()  {
         setSubmitted(true);
         const newCountry ={
             corporationName: pais,
-            countryCode: abreviacion
+            enabled: true
           };
             try{
                APIs.postCountry(newCountry)
@@ -131,9 +131,8 @@ export default function Corporacion ()  {
     const editPais = () => {
         setSubmitted(true);
         const newCountry ={
-            countryName: pais,
-            countryId: paisId,
-            countryCode: abreviacion,
+            corporationName: pais,
+            corporationId: paisId,
             enabled: true
           };
             try{
@@ -175,8 +174,8 @@ export default function Corporacion ()  {
 
     const editProduct = (product) => {
         setDetalle(false)
-        setPais(product.countryName)
-        setPaisId(product.countryId)
+        setPais(product.corporationName)
+        setPaisId(product.corporationId)
         setAbreviacion(product.countryCode)
         console.log('test',product);
         setEdit(true)
@@ -186,15 +185,13 @@ export default function Corporacion ()  {
     const confirmDeleteProduct = (product) => {
         
         setProduct(product);
-        setPaisId(product.countryId)
+        setPaisId(product.corporationId)
         setDeleteProductDialog(true);
     }
 
     const deleteProduct = () => {
         const newCountry ={
-            countryName: "hardcode",
-            countryId: paisId,
-            countryCode: "hardcode",
+            corporationId: paisId,
             enabled: false
           };
             try{
@@ -396,18 +393,11 @@ export default function Corporacion ()  {
             <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nueva Coorporacion": "Editar Coorporacion"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
 
                 <div className="field">
-                    <label htmlFor="Pais">Pais - Ejemplo: México</label>
+                    <label htmlFor="Pais">Nombre de coorporacion</label>
                     <InputText
                         value={pais}
                         onChange={e => setPais(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !pais })} />
                     {submitted && !pais && <small className="p-error">Pais es obligatorio.</small>}
-                </div>
-                <div className="field">
-                    <label htmlFor="Pais">Abreviación - Ejemplo: MEX</label> 
-                    <InputText
-                        value={abreviacion}
-                        onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Abreviacion es obligatorio.</small>}
                 </div>
             </Dialog>
 

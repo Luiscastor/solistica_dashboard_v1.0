@@ -4,7 +4,8 @@ import axios from 'axios';
 
 const getAllCities = async () => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.get(`${baseUrl}/location/getLocations/all`,{  headers: { Authorization: `${tokenApp}` }});
+    const tokenApp2 = window.localStorage.getItem('distribucion')
+    const {data: res} = await axios.get(`${baseUrl}/location/getLocations/all/${tokenApp2}`,{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
   const getAllStates = async () => {
@@ -15,15 +16,11 @@ const getAllCities = async () => {
 
   const deleteCity = async ({
     locationTypeId,
-    locationTypedescription,
-    locationTypeName,
     enabled
     }) => {
       const tokenApp = window.localStorage.getItem('token') 
-      const {data: res} = await axios.patch(`${baseUrl}/locationType/update`,{ 
+      const {data: res} = await axios.patch(`${baseUrl}/location/update/enabled`,{ 
         locationTypeId,
-        locationTypedescription,
-        locationTypeName,
         enabled
        },{  headers: { Authorization: `${tokenApp}` }});
       return res;
@@ -36,7 +33,7 @@ const getAllCities = async () => {
     enabled
     }) => {
       const tokenApp = window.localStorage.getItem('token') 
-      const {data: res} = await axios.patch(`${baseUrl}/locationType/update`,{ 
+      const {data: res} = await axios.patch(`${baseUrl}/location/update`,{ 
         locationTypeId,
         locationTypedescription,
         locationTypeName,
@@ -52,7 +49,7 @@ const getAllCities = async () => {
     enabled
   }) => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.post(`${baseUrl}/locationType/save`,{ 
+    const {data: res} = await axios.post(`${baseUrl}/location/save`,{ 
       locationTypedescription,
       locationTypeName,
       enabled

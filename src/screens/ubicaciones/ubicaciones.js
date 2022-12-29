@@ -39,6 +39,7 @@ export default function UbicacionesM ()  {
     const [selectedCountry2, setSelectedCountry2] = useState(null);
     const [selectedCountry3, setSelectedCountry3] = useState(null);
     const [selectedCountry4, setSelectedCountry4] = useState(null);
+    const [selectedCountry5, setSelectedCountry5] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
     const [abreviacion, setAbreviacion] = useState(null);
@@ -75,10 +76,13 @@ export default function UbicacionesM ()  {
     const [value12, setValue12] = useState(null)
     const [value13, setValue13] = useState(null)
     const [value14, setValue14] = useState(null)
+    const [value15, setValue15] = useState(null)
+    const [value16, setValue16] = useState(null)
 
     useEffect(() => {
       try {
         APIs.getAllCities().then((data) => {
+            console.log("test",data);
           setDatas(data.resultset.map((e) => {
             return {
               ...e,
@@ -493,6 +497,10 @@ export default function UbicacionesM ()  {
         setSelectedCountry4(e.value);
         console.log("testcountry", e.value);
     }
+    const onCountryChange5 = (e) => {
+        setSelectedCountry4(e.value);
+        console.log("testcountry", e.value);
+    }
     const deleteSelectedProducts = () => {
         let _products = products.filter(val => !selectedProducts.includes(val));
         setProducts(_products);
@@ -638,14 +646,14 @@ export default function UbicacionesM ()  {
                     <Column field="location.zone4" header="Zona 4" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
                     <Column field="location.timeZone.timeZoneName" header="Zona horaria" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
                     <Column field="location.description" header="Descripcion" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
-                    <Column field="location.corporation" header="Corporacion" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.corporation.corporationName" header="Corporacion" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
                     <Column field="location.ownerType" header="Tipo de dueño" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
             <Dialog visible={productDialog} style={{ width: '1000px' }} header="Detalles de la ubicacion" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <div style={{width:'100%',background:'red', flexDirection:'row',alignItems:'center', display:'flex', justifyContent:'center'}}>
-                <div style={{width:'30%',background:'yellow', marginRight:4 }}>
+                <div style={{width:'100%', flexDirection:'row',alignItems:'center', display:'flex', justifyContent:'center'}}>
+                <div style={{width:'30%', marginRight:8 }}>
                 <div className="field">
                     <label htmlFor="Base">Base de cliente </label>
                     <InputText
@@ -693,7 +701,7 @@ export default function UbicacionesM ()  {
                     {submitted && !selectedCountry3 && <small className="p-error">codigo es obligatorio.</small>}
                 </div>
                 </div>
-                <div style={{width:'30%',background:'yellow' }}>
+                <div style={{width:'30%',marginRight:8}}>
                 <div className="field">
                     <label htmlFor="Base">Latitud</label>
                     <InputText
@@ -740,11 +748,58 @@ export default function UbicacionesM ()  {
                     <label htmlFor="Base">Zona horaria</label>
                     <Dropdown value={selectedCountry4} options={datas} onChange={onCountryChange4} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
                     className={classNames({ 'p-invalid': submitted && !selectedCountry4 })}/>
-                    {submitted && !selectedCountry4 && <small className="p-error">Zona es obligatorio.</small>}
+                    {submitted && !selectedCountry4 && <small className="p-error">Zona horaria es obligatorio.</small>}
                 </div>
                 </div>
-                <div style={{width:'30%',background:'yellow' }}>
-                    <h1>test</h1>
+                <div style={{width:'30%'}}>
+                <div className="field">
+                    <label htmlFor="Base">Direccion, calle y numero </label>
+                    <InputText
+                        value={value11}
+                        onChange={e => setValue11(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value11 })} />
+                    {submitted && !value11 && <small className="p-error">Direccion es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Descripcion</label>
+                    <InputText
+                        value={value12}
+                        onChange={e => setValue12(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value12 })} />
+                    {submitted && !value12 && <small className="p-error">Descripcion es obligatorio.</small>}
+                </div>
+                <div className="field">
+                <label htmlFor="Base">Coorporacion</label>
+                    <Dropdown value={selectedCountry5} options={datas} onChange={onCountryChange5} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
+                    className={classNames({ 'p-invalid': submitted && !selectedCountry4 })}/>
+                    {submitted && !selectedCountry5 && <small className="p-error">Coorporacion es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Tipo de owner</label>
+                    <InputText
+                        value={value13}
+                        onChange={e => setValue13(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value13 })} />
+                    {submitted && !value13 && <small className="p-error">Tipo es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Cedis</label>
+                    <InputText
+                        value={value14}
+                        onChange={e => setValue14(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value14 })} />
+                    {submitted && !value14 && <small className="p-error">Cedis es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Tipo de impuesto</label>
+                    <InputText
+                        value={value15}
+                        onChange={e => setValue15(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value15 })} />
+                    {submitted && !value15 && <small className="p-error">Tipo es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Tipo de ubicacion</label>
+                    <InputText
+                        value={value16}
+                        onChange={e => setValue16(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value16 })} />
+                    {submitted && !value16 && <small className="p-error">Descripcion es obligatorio.</small>}
+                </div>
                 </div>
                 </div>
             </Dialog>

@@ -257,29 +257,18 @@ export default function Panel ()  {
 
     const confirmDeleteProduct = (product) => {
         setProduct(product);
-        setPaisId(product.userId)
+        setPaisId(product.registrationErrorId)
         setDeleteCountry(product.state)
         setDeleteProductDialog(true);
     }
 
     const deleteProduct = () => {
-        const newCountry ={
-          userId:paisId,
-          userName: "hardcode",
-          userMail: "hardcode",
-          userPassword: "hardcode",
-          telefono: "hardcode",
-          departamento: "hardcode",
-          rol: "hardcode",
-          distribucion: "hardcode",
-          enabled: false
-          };
             try{
-               APIs.deleteCity(newCountry)
+               APIs.deleteCity(paisId)
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Eliminado ', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Error Eliminado ', life: 3000 });
                 setTimeout(() => {
                     setCargar(false)
                     setDeleteProductDialog(false);
@@ -305,6 +294,39 @@ export default function Panel ()  {
                  })
                 }catch(error){}
     }
+
+    const deleteProducts = () => {
+      try{
+         APIs.deleteAllErrors()
+        .then((res)=>{
+          if(res.codigo == 200){
+              setCargar(true)
+              toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Errores Eliminados', life: 3000 });
+          setTimeout(() => {
+              setCargar(false)
+              setDeleteProductsDialog(false);
+                  try {
+                      APIs.getAllCities().then((data) => {
+                        setDatas(data.resultset.map((e) => {
+                          return {
+                            ...e,
+                          }
+                        }))
+                      })
+                
+                    } catch (error) {
+                      console.log(error)
+                    }
+              }, 3000);
+          }
+          if(res.codigo == 204){
+              {
+                  toast.current.show({ severity: 'error', summary: 'Error', detail: 'Hubo un error', life: 3000 });
+              }
+          }
+           })
+          }catch(error){}
+}
 
     // const findIndexById = (id) => {
     //     let index = -1;
@@ -368,11 +390,9 @@ export default function Panel ()  {
     }
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter(val => !selectedProducts.includes(val));
-        setProducts(_products);
-        setDeleteProductsDialog(false);
-        setSelectedProducts(null);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+
+        setDeleteProductsDialog(true);
+
     }
 
 
@@ -382,7 +402,7 @@ export default function Panel ()  {
         return (
             <React.Fragment>
                 {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
-                <Button label="Eliminar todo" icon="pi pi-trash"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} />
+                <Button label="Eliminar todo" icon="pi pi-trash"  style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} onClick={deleteSelectedProducts} />
                 <Button label="Descargar" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
             </React.Fragment>
         )
@@ -442,8 +462,8 @@ export default function Panel ()  {
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} style={{backgroundColor:'#202c52', color:'white'}}  />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProducts} loading={cargar} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
 
@@ -456,7 +476,7 @@ export default function Panel ()  {
                 <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
                     dataKey="registrationErrorId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" scrollable 
-                    currentPageReportTemplate="Mostrar {first} de {totalRecords} usuarios"
+                    currentPageReportTemplate="Mostrar {first} de {totalRecords} errores"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
@@ -532,14 +552,14 @@ export default function Panel ()  {
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span> Deseas eliminar la siguiente ubicacion <b>{product.userName}</b>?</span>}
+                    {product && <span> Deseas eliminar la siguiente ubicacion <b>{product.customerName}</b>?</span>}
                 </div>
             </Dialog>
 
             <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span>Are you sure you want to delete the selected products?</span>}
+                     <span>Deseas eliminar todos los productos?</span>
                 </div>
             </Dialog>
         </div>

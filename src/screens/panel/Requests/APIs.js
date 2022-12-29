@@ -13,21 +13,20 @@ const getAllCities = async () => {
     return res;
   };
 
-  const deleteCity = async ({
-    locationTypeId,
-    locationTypedescription,
-    locationTypeName,
-    enabled
-    }) => {
+  const deleteCity = async (
+    registrationErrorId
+    ) => {
       const tokenApp = window.localStorage.getItem('token') 
-      const {data: res} = await axios.patch(`${baseUrl}/locationType/update`,{ 
-        locationTypeId,
-        locationTypedescription,
-        locationTypeName,
-        enabled
-       },{  headers: { Authorization: `${tokenApp}` }});
+      const {data: res} = await axios.delete(`${baseUrl}/location/deteleError/${registrationErrorId}`,{  headers: { Authorization: `${tokenApp}` }});
       return res;
     };
+    const deleteAllErrors = async (
+      
+      ) => {
+        const tokenApp = window.localStorage.getItem('token') 
+        const {data: res} = await axios.delete(`${baseUrl}/location/deteleError/all`,{  headers: { Authorization: `${tokenApp}` }});
+        return res;
+      };
 
   const putCity = async ({
     locationTypeId,
@@ -63,6 +62,7 @@ const getAllCities = async () => {
   export default {
     getAllCities,
     deleteCity,
+    deleteAllErrors,
     putCity,
     postCity,
     getAllStates
