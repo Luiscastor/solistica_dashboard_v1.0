@@ -174,7 +174,7 @@ export default function Dashboard({children}) {
       <ListItemIcon>
         <ShoppingCartIcon color="secondary"/>
       </ListItemIcon>
-      <ListItemText color="secondary" primary="Ubicaciones" />
+      <ListItemText color="secondary" primary="Ubicaciones" onClick={()=>{history.push('/ubicacionesm')}}/>
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>

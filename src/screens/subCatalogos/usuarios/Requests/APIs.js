@@ -9,7 +9,7 @@ const getAllCities = async () => {
   };
   const getAllStates = async () => {
     const tokenApp = window.localStorage.getItem('token') 
-    const {data: res} = await axios.get(`${baseUrl}/state/getState/all/enabled`,{  headers: { Authorization: `${tokenApp}` }});
+    const {data: res} = await axios.get(`${baseUrl}/usuarios/getRoles/all`,{  headers: { Authorization: `${tokenApp}` }});
     return res;
   };
 

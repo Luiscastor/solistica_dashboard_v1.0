@@ -14,7 +14,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import  APIs from './Requests/APIs'
-import '../Index.css'
+import '../index.css'
 import '../styles.css'
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';

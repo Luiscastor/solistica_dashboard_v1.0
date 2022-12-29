@@ -1,5 +1,5 @@
 import 'primeicons/primeicons.css';
-import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
@@ -16,14 +16,16 @@ import { InputText } from 'primereact/inputtext';
 import  APIs from './Requests/APIs'
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
+import '../../screens/subCatalogos/index.css'
+import '../../screens/subCatalogos/styles.css'
 
 
-
-export default function Contactos ()  {
+export default function UbicacionesM ()  {
 
 
     const [datas, setDatas] = useState();
     const [datas2, setDatas2] = useState();
+    const [datas3, setDatas3] = useState();
     const [edit, setEdit] = useState(false);
     const [loading, setLoading] = useState(true)
     const [cargar, setCargar]= useState(false)
@@ -58,10 +60,37 @@ export default function Contactos ()  {
           setDatas(data.resultset.map((e) => {
             return {
               ...e,
+              //active_visibility_desc: e.location.isCedis == true ? "SI" : "NO"
+            }
+          }))
+          console.log("datas",datas);
+          setLoading(false)
+        })
+  
+      } catch (error) {
+        console.log(error)
+      }
+      try {
+        APIs.getAllStates().then((data) => {
+          setDatas2(data.resultset.map((e) => {
+            return {
+              ...e,
              // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
             }
           }))
-          setLoading(false)
+        })
+  
+      } catch (error) {
+        console.log(error)
+      }
+      try {
+        APIs.getAllStates().then((data) => {
+          setDatas3(data.resultset.map((e) => {
+            return {
+              ...e,
+             // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+            }
+          }))
         })
   
       } catch (error) {
@@ -88,7 +117,12 @@ export default function Contactos ()  {
         setSelectedCountry(null);
         setProductDialog(false);
     }
-
+    const onCityChange = (e) => {
+        setRol(e.value);
+    }
+    const onCityChange2 = (e) => {
+        setDistribucion(e.value);
+    }
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
     }
@@ -338,7 +372,7 @@ export default function Contactos ()  {
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="Nuevo Usuario" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
+                <Button label="Nueva Ubicacion" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
                 {/* <Button style={{marginLeft:2}} label="Eliminar Pais" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected}  /> */}
             </React.Fragment>
         )
@@ -348,6 +382,8 @@ export default function Contactos ()  {
         return (
             <React.Fragment>
                 {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
+                <Button label="Carga Masiva" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} />
+                <Button label="Carga Masiva Edicion" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} />
                 <Button label="Descargar" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
             </React.Fragment>
         )
@@ -381,7 +417,7 @@ export default function Contactos ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Administrar Usuarios</h5>
+            <h5 className="mx-0 my-1">Administrar Ubicaciones Masivas</h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -419,74 +455,47 @@ export default function Contactos ()  {
             <div className="card">
                 <Toolbar className="mb-4 mt-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
                 <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
-                    dataKey="userId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    dataKey="customerLocationId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" scrollable 
                     currentPageReportTemplate="Mostrar {first} de {totalRecords} usuarios"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
-                    <Column field="userName" header="Nombre del usuario" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column field="userMail" header="Correo del usuario" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column field="distribucion" header="Distribucion del usuario" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="customer.customerBase" header="Base" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="customer.customerName" header="Cliente" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.locationCode" header="ID" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.locationName" header="Nombre" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.city.state.stateName" header="Estado" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.city.cityName" header="Ciudad" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.city.state.stateCode" header="Codigo" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.locationLatitude" header="Latitud" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.locationLongitude" header="Longitud" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.zone1" header="Zona 1" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.zone2" header="Zona 2" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.zone3" header="Zona 3" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.zone4" header="Zona 4" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.timeZone.timeZoneName" header="Zona horaria" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.description" header="Descripcion" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.corporation" header="Corporacion" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
+                    <Column field="location.ownerType" header="Tipo de dueño" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains"  style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <div className="field">
-                    <label htmlFor="Base">Departamento </label>
-                    <InputText
-                        value={departamento}
-                        onChange={e => setDepartamento(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !departamento })} />
-                    {submitted && !departamento && <small className="p-error">Departamento es mandatorio.</small>}
+            <Dialog visible={productDialog} style={{ width: '650px' }} header="Detalles de la ubicacion" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                <div style={{width:'100%',background:'red', flexDirection:'row',alignItems:'center', display:'flex', justifyContent:'center'}}>
+                <div style={{width:'45%',background:'yellow' }}>
+                    <h1>test</h1>
                 </div>
-                <div className="field">
-                    <label htmlFor="Nombre">Rol</label>
-                    <InputText
-                        value={rol}
-                        onChange={e => setRol(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !rol })} />
-                    {submitted && !rol && <small className="p-error">Rol es mandatorio.</small>}
+                <div style={{width:'45%',background:'yellow' }}>
+                    <h1>test</h1>
                 </div>
-                <div className="field">
-                    <label htmlFor="Rango">Distribucion</label>
-                    <InputText
-                        value={distribucion}
-                        onChange={e => setDistribucion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !distribucion })} />
-                    {submitted && !distribucion && <small className="p-error">Distribucion es mandatorio.</small>}
-                </div>
-                <div className="field">
-                    <label htmlFor="Rango">Telefono</label>
-                    <InputText
-                        value={telefono}
-                        onChange={e => setTelefono(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefono })} />
-                    {submitted && !telefono && <small className="p-error">Telefono es mandatorio.</small>}
-                </div>
-                <div className="field">
-                    <label htmlFor="Rango">Correo electronico</label>
-                    <InputText
-                        value={email}
-                        onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email })} />
-                    {submitted && !email && <small className="p-error">Correo es mandatorio.</small>}
-                </div>
-                <div className="field">
-                    <label htmlFor="Rango">Nombre</label>
-                    <InputText
-                        value={nombre}
-                        onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nombre })} />
-                    {submitted && !nombre && <small className="p-error">Nombre es mandatorio.</small>}
-                </div>
-                <div className="field">
-                    <label htmlFor="Rango">Contraseña</label>
-                    <InputText
-                        value={contraseña}
-                        onChange={e => setContraseña(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !contraseña })} />
-                    {submitted && !contraseña && <small className="p-error">Contraseña es mandatorio.</small>}
                 </div>
             </Dialog>
 
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span> Deseas eliminar la siguiente zona <b>{product.userName}</b>?</span>}
+                    {product && <span> Deseas eliminar la siguiente ubicacion <b>{product.userName}</b>?</span>}
                 </div>
             </Dialog>
 

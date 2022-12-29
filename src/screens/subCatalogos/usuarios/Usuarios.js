@@ -1,5 +1,5 @@
 import 'primeicons/primeicons.css';
-import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
@@ -11,25 +11,28 @@ import { Rating } from 'primereact/rating';
 import { Toolbar } from 'primereact/toolbar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import  APIs from './Requests/APIs'
+import { Dropdown } from 'primereact/dropdown';
+import { InputNumber } from 'primereact/inputnumber';
 import '../index.css'
 import '../styles.css'
-import { Dropdown } from 'primereact/dropdown';
 
-export default function Ciudades ()  {
+
+export default function Contactos ()  {
 
 
     const [datas, setDatas] = useState();
     const [datas2, setDatas2] = useState();
+    const [datas3, setDatas3] = useState();
     const [edit, setEdit] = useState(false);
     const [loading, setLoading] = useState(true)
     const [cargar, setCargar]= useState(false)
     const [products, setProducts] = useState(null);
     const [product, setProduct] = useState(null);
     const [ciudad, setCiudad] = useState(null);
+    const [rango, setRango] = useState(null)
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
@@ -43,10 +46,13 @@ export default function Ciudades ()  {
     const toast = useRef(null);
     const dt = useRef(null);
 
-    const onCountryChange = (e) => {
-        setSelectedCountry(e.value);
-        console.log("testcountry", e.value);
-    }
+    const [departamento, setDepartamento] = useState(null)
+    const [rol, setRol] = useState(null)
+    const [distribucion, setDistribucion] = useState(null)
+    const [telefono, setTelefono] = useState(null)
+    const [email, setEmail] = useState(null)
+    const [nombre, setNombre] = useState(null)
+    const [contraseña, setContraseña] = useState(null)
 
     useEffect(() => {
       try {
@@ -76,6 +82,19 @@ export default function Ciudades ()  {
       } catch (error) {
         console.log(error)
       }
+      try {
+        APIs.getAllStates().then((data) => {
+          setDatas3(data.resultset.map((e) => {
+            return {
+              ...e,
+             // active_visibility_desc: e.active_visibility == true ? "SI" : "NO"
+            }
+          }))
+        })
+  
+      } catch (error) {
+        console.log(error)
+      }
   
     }, [loading])
 
@@ -91,11 +110,18 @@ export default function Ciudades ()  {
     const hideDialog = () => {
         setSubmitted(false);
         setCiudad("");
+        setAbreviacion("");
+        setRango(null)
         setEdit(false)
         setSelectedCountry(null);
         setProductDialog(false);
     }
-
+    const onCityChange = (e) => {
+        setRol(e.value);
+    }
+    const onCityChange2 = (e) => {
+        setDistribucion(e.value);
+    }
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
     }
@@ -107,16 +133,21 @@ export default function Ciudades ()  {
     const saveProduct = () => {
         setSubmitted(true);
         const newCountry ={
-            cityName: ciudad,
-            state: selectedCountry,
-            enabled: true
+          userName: nombre,
+          userMail: email,
+          userPassword: contraseña,
+          telefono: telefono,
+          departamento: departamento,
+          rol: rol,
+          distribucion: distribucion,
+          enabled: true
           };
             try{
                APIs.postCity(newCountry)
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ciudad Creada', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Creado', life: 3000 });
                 setTimeout(() => {
                         setProductDialog(false);
                         setCargar(false)
@@ -129,9 +160,13 @@ export default function Ciudades ()  {
                                 }
                               }))
                               setLoading(false)
-                              setCiudad("")
-                              setSelectedCountry(null)
-                              setAbreviacion("")
+                             setDepartamento(null)
+                             setRol(null)
+                             setDistribucion(null)
+                             setTelefono(null)
+                             setEmail(null)
+                             setNombre(null)
+                             setContraseña(null)
                             })
                       
                           } catch (error) {
@@ -150,17 +185,22 @@ export default function Ciudades ()  {
     const editPais = () => {
         setSubmitted(true);
         const newCountry ={
-            cityId: paisId,
-            cityName: ciudad,
-            state: selectedCountry,
-            enabled: true
+          userId:paisId,
+          userName: nombre,
+          userMail: email,
+          userPassword: contraseña,
+          telefono: telefono,
+          departamento: departamento,
+          rol: rol,
+          distribucion: distribucion,
+          enabled: true
           };
             try{
                APIs.putCity(newCountry)
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ciudad Editada', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Editado', life: 3000 });
                 setTimeout(() => {
                         setProductDialog(false);
                         setLoading(true)
@@ -195,34 +235,43 @@ export default function Ciudades ()  {
     }
 
     const editProduct = (product) => {
-        setCiudad(product.cityName)
-        setPaisId(product.cityId)
-        setAbreviacion("TEST")
-        console.log('test',product);
+        setPaisId(product.userId)
+        setDepartamento(product.departamento)
+        setRol(product.rol)
+        setDistribucion(product.distribucion)
+        setTelefono(product.telefono)
+        setEmail(product.userMail)
+        setNombre(product.userName)
+        setContraseña(product.userPassword)
         setEdit(true)
         setProductDialog(true);
     }
 
     const confirmDeleteProduct = (product) => {
         setProduct(product);
-        setPaisId(product.cityId)
+        setPaisId(product.userId)
         setDeleteCountry(product.state)
         setDeleteProductDialog(true);
     }
 
     const deleteProduct = () => {
         const newCountry ={
-            cityName: "hardcode",
-            cityId: paisId,
-            enabled: false,
-            state: deleteCountry
+          userId:paisId,
+          userName: "hardcode",
+          userMail: "hardcode",
+          userPassword: "hardcode",
+          telefono: "hardcode",
+          departamento: "hardcode",
+          rol: "hardcode",
+          distribucion: "hardcode",
+          enabled: false
           };
             try{
                APIs.deleteCity(newCountry)
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ciudad Eliminada', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Satisfactorio', detail: 'Usuario Eliminado ', life: 3000 });
                 setTimeout(() => {
                     setCargar(false)
                     setDeleteProductDialog(false);
@@ -322,7 +371,7 @@ export default function Ciudades ()  {
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="Nueva Ciudad" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
+                <Button label="Nuevo Usuario" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
                 {/* <Button style={{marginLeft:2}} label="Eliminar Pais" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected}  /> */}
             </React.Fragment>
         )
@@ -332,7 +381,7 @@ export default function Ciudades ()  {
         return (
             <React.Fragment>
                 {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
-                <Button label="Exportar Archivo" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
+                <Button label="Descargar" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
             </React.Fragment>
         )
     }
@@ -365,7 +414,7 @@ export default function Ciudades ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Administrar Ciudades</h5>
+            <h5 className="mx-0 my-1">Administrar Usuarios</h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -403,37 +452,72 @@ export default function Ciudades ()  {
             <div className="card">
                 <Toolbar className="mb-4 mt-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
                 <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
-                    dataKey="cityId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                    dataKey="userId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Mostrar {first} de {totalRecords} ciudades"
+                    currentPageReportTemplate="Mostrar {first} de {totalRecords} usuarios"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
-                    <Column field="cityName" header="Ciudad" filter filterPlaceholder="Buscar por ciudad" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="userName" header="Nombre del usuario" filter filterPlaceholder="Buscar por nombre" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="userMail" header="Correo del usuario" filter filterPlaceholder="Buscar por correo" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="distribucion" header="Distribucion del usuario" filter filterPlaceholder="Buscar por distribucion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles de la ciudad" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del usuario" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
-                    <label htmlFor="Estado">Estado - Ejemplo: Nuevo Leon</label>
-                    <Dropdown value={selectedCountry} options={datas2} onChange={onCountryChange} required autoFocus optionLabel="stateName" filter showClear filterBy="stateName" placeholder="Selecciona un estado"
-                    className={classNames({ 'p-invalid': submitted && !selectedCountry })}/>
-                    
-                    {submitted && !selectedCountry && <small className="p-error">Estado es mandatorio.</small>}
+                    <label htmlFor="Base">Departamento </label>
+                    <InputText
+                        value={departamento}
+                        onChange={e => setDepartamento(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !departamento })} />
+                    {submitted && !departamento && <small className="p-error">Departamento es mandatorio.</small>}
                 </div>
                 <div className="field">
-                    <label htmlFor="Ciudad">Ciudad - Ejemplo: Lerdo</label>
+                    <label htmlFor="Nombre">Rol</label>
+                    <Dropdown value={rol} options={datas2} onChange={onCityChange} optionLabel="roleName" placeholder="Selecciona un rol"
+                    className={classNames({ 'p-invalid': submitted && !rol })} />
+                    {submitted && !rol && <small className="p-error">Rol es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Distribucion</label>
+                    <Dropdown value={distribucion} options={datas3} onChange={onCityChange2} optionLabel="roleName" placeholder="Selecciona un rol"
+                    className={classNames({ 'p-invalid': submitted && !rol })} />
+                    {submitted && !distribucion && <small className="p-error">Distribucion es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Telefono</label>
                     <InputText
-                        value={ciudad}
-                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Ciudad es mandatorio.</small>}
+                        value={telefono}
+                        onChange={e => setTelefono(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefono })} />
+                    {submitted && !telefono && <small className="p-error">Telefono es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Correo electronico</label>
+                    <InputText
+                        value={email}
+                        onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email })} />
+                    {submitted && !email && <small className="p-error">Correo es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Nombre</label>
+                    <InputText
+                        value={nombre}
+                        onChange={e => setNombre(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nombre })} />
+                    {submitted && !nombre && <small className="p-error">Nombre es mandatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Rango">Contraseña</label>
+                    <InputText
+                        value={contraseña}
+                        onChange={e => setContraseña(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !contraseña })} />
+                    {submitted && !contraseña && <small className="p-error">Contraseña es mandatorio.</small>}
                 </div>
             </Dialog>
 
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span> Deseas eliminar la siguiente ciudad <b>{product.cityName}</b>?</span>}
+                    {product && <span> Deseas eliminar la siguiente zona <b>{product.userName}</b>?</span>}
                 </div>
             </Dialog>
 
