@@ -33,6 +33,7 @@ export default function Ciudades ()  {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
+    const [detalle, setDetalle] = useState(null);
     const [abreviacion, setAbreviacion] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -84,6 +85,7 @@ export default function Ciudades ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -195,6 +197,7 @@ export default function Ciudades ()  {
     }
 
     const editProduct = (product) => {
+        setDetalle(false)
         setCiudad(product.cityName)
         setPaisId(product.cityId)
         setAbreviacion("TEST")
@@ -386,7 +389,7 @@ export default function Ciudades ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -413,20 +416,20 @@ export default function Ciudades ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles de la ciudad" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nueva Ciudad" : "Editar Ciudad"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Estado">Estado - Ejemplo: Nuevo Leon</label>
                     <Dropdown value={selectedCountry} options={datas2} onChange={onCountryChange} required autoFocus optionLabel="stateName" filter showClear filterBy="stateName" placeholder="Selecciona un estado"
                     className={classNames({ 'p-invalid': submitted && !selectedCountry })}/>
                     
-                    {submitted && !selectedCountry && <small className="p-error">Estado es mandatorio.</small>}
+                    {submitted && !selectedCountry && <small className="p-error">Estado es obligatorio.</small>}
                 </div>
                 <div className="field">
-                    <label htmlFor="Ciudad">Ciudad - Ejemplo: Lerdo</label>
+                    <label htmlFor="Ciudad">Ciudad - Ejemplo: Apodaca</label>
                     <InputText
                         value={ciudad}
                         onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Ciudad es mandatorio.</small>}
+                    {submitted && !ciudad && <small className="p-error">Ciudad es obligatorio.</small>}
                 </div>
             </Dialog>
 

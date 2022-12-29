@@ -33,6 +33,7 @@ export default function Impuestos ()  {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
+    const [detalle, setDetalle] = useState(null);
     const [abreviacion, setAbreviacion] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -68,6 +69,7 @@ export default function Impuestos ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -182,6 +184,7 @@ export default function Impuestos ()  {
     const editProduct = (product) => {
         setCiudad(product.taxTypeDescription)
         setPaisId(product.taxTypeId)
+        setDetalle(false)
         setAbreviacion(product.taxTypeName)
         console.log('test',product);
         setEdit(true)
@@ -371,7 +374,7 @@ export default function Impuestos ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -399,21 +402,22 @@ export default function Impuestos ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del impuesto" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <div className="field">
-                    <label htmlFor="Ciudad">Descripcion - Tipo de impuesto</label>
-                    <InputText
-                        value={ciudad}
-                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Descripcion es mandatorio.</small>}
-                </div>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo Impuesto" : "Editar Impuesto"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Ciudad">Nombre - Tipo de impuesto</label>
                     <InputText
                         value={abreviacion}
                         onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Nombre es mandatorio.</small>}
+                    {submitted && !abreviacion && <small className="p-error">Nombre es obligatorio.</small>}
                 </div>
+                <div className="field">
+                    <label htmlFor="Ciudad">Descripcion - Tipo de impuesto</label>
+                    <InputText
+                        value={ciudad}
+                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
+                    {submitted && !ciudad && <small className="p-error">Descripcion es obligatorio.</small>}
+                </div>
+                
             </Dialog>
 
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>

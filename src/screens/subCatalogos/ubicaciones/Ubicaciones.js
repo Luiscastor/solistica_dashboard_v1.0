@@ -33,6 +33,7 @@ export default function Ubicaciones ()  {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
+    const [detalle, setDetalle] = useState(null);
     const [abreviacion, setAbreviacion] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -68,6 +69,7 @@ export default function Ubicaciones ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -182,6 +184,7 @@ export default function Ubicaciones ()  {
     const editProduct = (product) => {
         setCiudad(product.locationTypedescription)
         setPaisId(product.locationTypeId)
+        setDetalle(false)
         setAbreviacion(product.locationTypeName)
         console.log('test',product);
         setEdit(true)
@@ -350,7 +353,7 @@ export default function Ubicaciones ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Administrar Ubicaciones</h5>
+            <h5 className="mx-0 my-1">Administrar tipo de ubicacion</h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -371,7 +374,7 @@ export default function Ubicaciones ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -390,30 +393,31 @@ export default function Ubicaciones ()  {
                 <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)} loading={loading}
                     dataKey="locationTypeId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Mostrar {first} de {totalRecords} impuesto"
+                    currentPageReportTemplate="Mostrar {first} de {totalRecords} ubicaciones"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
-                    <Column field="locationTypeName" header="Nombre de ubicacion" filter filterPlaceholder="Buscar por ubicacion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column field="locationTypedescription" header="Descripcion de ubicacion" filter filterPlaceholder="Buscar por descripcion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="locationTypeName" header="Nombre" filter filterPlaceholder="Buscar por ubicacion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="locationTypedescription" header="Descripción" filter filterPlaceholder="Buscar por descripcion" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del impuesto" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <div className="field">
-                    <label htmlFor="Ciudad">Descripcion - Tipo de ubicacion</label>
-                    <InputText
-                        value={ciudad}
-                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Descripcion es mandatorio.</small>}
-                </div>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo tipo de ubicacion" : "Editar tipo de ubicacion"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Ciudad">Nombre - Tipo de ubicacion</label>
                     <InputText
                         value={abreviacion}
                         onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Nombre es mandatorio.</small>}
+                    {submitted && !abreviacion && <small className="p-error">Nombre es obligatorio.</small>}
                 </div>
+                <div className="field">
+                    <label htmlFor="Ciudad">Descripcion - Tipo de ubicacion</label>
+                    <InputText
+                        value={ciudad}
+                        onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
+                    {submitted && !ciudad && <small className="p-error">Descripcion es obligatorio.</small>}
+                </div>
+                
             </Dialog>
 
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>

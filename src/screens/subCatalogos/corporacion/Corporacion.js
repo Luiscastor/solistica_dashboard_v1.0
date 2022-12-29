@@ -21,7 +21,7 @@ import '../styles.css'
 import { ToastContainer, toast } from 'react-toastify';
 
 
-export default function Paises ()  {
+export default function Corporacion ()  {
 
 
     const [datas, setDatas] = useState();
@@ -90,7 +90,7 @@ export default function Paises ()  {
     const saveProduct = () => {
         setSubmitted(true);
         const newCountry ={
-            countryName: pais,
+            corporationName: pais,
             countryCode: abreviacion
           };
             try{
@@ -98,7 +98,7 @@ export default function Paises ()  {
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Pais Creado', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Coorporacion Creada', life: 3000 });
                 setTimeout(() => {
                         setProductDialog(false);
                         setCargar(false)
@@ -141,7 +141,7 @@ export default function Paises ()  {
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Pais Editado', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Coorporacion Editada', life: 3000 });
                 setTimeout(() => {
                         setProductDialog(false);
                         setCargar(false)
@@ -202,7 +202,7 @@ export default function Paises ()  {
               .then((res)=>{
                 if(res.codigo == 200){
                     setCargar(true)
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Pais Eliminado', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Coorporacion Eliminada', life: 3000 });
                 setTimeout(() => {
                     setCargar(false)
                     setDeleteProductDialog(false);
@@ -302,7 +302,7 @@ export default function Paises ()  {
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="Nuevo Pais" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
+                <Button label="Nueva Coorporacion" icon="pi pi-plus"  onClick={openNew} style={{backgroundColor:'#202c52', color:'white',borderColor: 'rgba(0,0,0,0)'}}/>
                 {/* <Button style={{marginLeft:2}} label="Eliminar Pais" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected}  /> */}
             </React.Fragment>
         )
@@ -345,7 +345,7 @@ export default function Paises ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Administrar Paises</h5>
+            <h5 className="mx-0 my-1">Administrar Coorporaciones</h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -383,17 +383,17 @@ export default function Paises ()  {
             <div className="card">
                 <Toolbar className="mb-4 mt-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
                 <DataTable ref={dt} value={datas} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="countryId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                    dataKey="corporationId" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Mostrar {first} de {totalRecords} paises"
+                    currentPageReportTemplate="Mostrar {first} de {totalRecords} coorporaciones"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="single" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                     <Column body={actionBodyTemplate}  header="Acciones" exportable={false} style={{ minWidth: '2rem' }}></Column>
-                    <Column field="countryName" header="Pais" filter filterPlaceholder="Buscar por pais" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column field="corporationName" header="Coorporacion" filter filterPlaceholder="" filterMatchMode="contains" sortable style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo Pais": "Editar Pais"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nueva Coorporacion": "Editar Coorporacion"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
 
                 <div className="field">
                     <label htmlFor="Pais">Pais - Ejemplo: México</label>
@@ -414,7 +414,7 @@ export default function Paises ()  {
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmación" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {product && <span> Deseas eliminar el siguiente pais <b>{product.countryName}</b>?</span>}
+                    {product && <span> Deseas eliminar la siguiente coorporacion <b>{product.corporationName}</b>?</span>}
                 </div>
             </Dialog>
 

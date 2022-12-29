@@ -45,7 +45,7 @@ export default function Contactos ()  {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-
+    const [detalle, setDetalle] = useState(null);
     const [departamento, setDepartamento] = useState(null)
     const [rol, setRol] = useState(null)
     const [distribucion, setDistribucion] = useState(null)
@@ -103,6 +103,7 @@ export default function Contactos ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -241,6 +242,7 @@ export default function Contactos ()  {
         setDistribucion(product.distribucion)
         setTelefono(product.telefono)
         setEmail(product.userMail)
+        setDetalle(false)
         setNombre(product.userName)
         setContraseña(product.userPassword)
         setEdit(true)
@@ -435,7 +437,7 @@ export default function Contactos ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -464,53 +466,53 @@ export default function Contactos ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del usuario" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo Usuario" : "Editar Usuario"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Base">Departamento </label>
                     <InputText
                         value={departamento}
                         onChange={e => setDepartamento(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !departamento })} />
-                    {submitted && !departamento && <small className="p-error">Departamento es mandatorio.</small>}
+                    {submitted && !departamento && <small className="p-error">Departamento es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Nombre">Rol</label>
                     <Dropdown value={rol} options={datas2} onChange={onCityChange} optionLabel="roleName" placeholder="Selecciona un rol"
                     className={classNames({ 'p-invalid': submitted && !rol })} />
-                    {submitted && !rol && <small className="p-error">Rol es mandatorio.</small>}
+                    {submitted && !rol && <small className="p-error">Rol es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Distribucion</label>
                     <Dropdown value={distribucion} options={datas3} onChange={onCityChange2} optionLabel="roleName" placeholder="Selecciona un rol"
-                    className={classNames({ 'p-invalid': submitted && !rol })} />
-                    {submitted && !distribucion && <small className="p-error">Distribucion es mandatorio.</small>}
+                    className={classNames({ 'p-invalid': submitted && !distribucion })} />
+                    {submitted && !distribucion && <small className="p-error">Distribucion es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Telefono</label>
                     <InputText
                         value={telefono}
                         onChange={e => setTelefono(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefono })} />
-                    {submitted && !telefono && <small className="p-error">Telefono es mandatorio.</small>}
+                    {submitted && !telefono && <small className="p-error">Telefono es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Correo electronico</label>
                     <InputText
                         value={email}
                         onChange={e => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email })} />
-                    {submitted && !email && <small className="p-error">Correo es mandatorio.</small>}
+                    {submitted && !email && <small className="p-error">Correo es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Nombre</label>
                     <InputText
                         value={nombre}
                         onChange={e => setNombre(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nombre })} />
-                    {submitted && !nombre && <small className="p-error">Nombre es mandatorio.</small>}
+                    {submitted && !nombre && <small className="p-error">Nombre es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Contraseña</label>
                     <InputText
                         value={contraseña}
                         onChange={e => setContraseña(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !contraseña })} />
-                    {submitted && !contraseña && <small className="p-error">Contraseña es mandatorio.</small>}
+                    {submitted && !contraseña && <small className="p-error">Contraseña es obligatorio.</small>}
                 </div>
             </Dialog>
 

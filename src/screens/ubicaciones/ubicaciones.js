@@ -18,7 +18,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import '../../screens/subCatalogos/index.css'
 import '../../screens/subCatalogos/styles.css'
-
+import axios from 'axios';
 
 export default function UbicacionesM ()  {
 
@@ -28,12 +28,17 @@ export default function UbicacionesM ()  {
     const [datas3, setDatas3] = useState();
     const [edit, setEdit] = useState(false);
     const [loading, setLoading] = useState(true)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
     const [cargar, setCargar]= useState(false)
     const [products, setProducts] = useState(null);
     const [product, setProduct] = useState(null);
     const [ciudad, setCiudad] = useState(null);
     const [rango, setRango] = useState(null)
     const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedCountry2, setSelectedCountry2] = useState(null);
+    const [selectedCountry3, setSelectedCountry3] = useState(null);
+    const [selectedCountry4, setSelectedCountry4] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
     const [abreviacion, setAbreviacion] = useState(null);
@@ -60,6 +65,16 @@ export default function UbicacionesM ()  {
     const [value3, setValue3] = useState(null)
     const [value4, setValue4] = useState(null)
     const [value5, setValue5] = useState(null)
+    const [value6, setValue6] = useState(null)
+    const [value7, setValue7] = useState(null)
+
+    const [value8, setValue8] = useState(null)
+    const [value9, setValue9] = useState(null)
+    const [value10, setValue10] = useState(null)
+    const [value11, setValue11] = useState(null)
+    const [value12, setValue12] = useState(null)
+    const [value13, setValue13] = useState(null)
+    const [value14, setValue14] = useState(null)
 
     useEffect(() => {
       try {
@@ -358,7 +373,103 @@ export default function UbicacionesM ()  {
 
     //     reader.readAsText(file, 'UTF-8');
     // }
+    const convertirBase64 = (archivos) => {
+        Array.from(archivos).forEach((archivo) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(archivo);
+          reader.onload = () => {
+            let fileBase64 = [];
+            const base64 = reader.result;
+            // console.log(base64);
+            fileBase64 = base64.split(",");
+            // console.log(fileBase64[1]);
+            setLoading2(true)
+            axios
+              .post(
+                // "https://753e-108-175-15-104.ngrok.io/api/location/uploadExcel",
+                "http://108.175.15.104:8080/api/location/uploadExcel",
+                // "https://cors-anywhere.herokuapp.com/http://108.175.15.104:8080/api/location/uploadExcel",
+                {
+                  base64: fileBase64[1],
+                },
+                {
+                  headers: {
+                    Authorization: `${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+              .then((response) => {
+                try {
+                    APIs.getAllCities().then((data) => {
+                      setDatas(data.resultset.map((e) => {
+                        return {
+                          ...e,
+                          //active_visibility_desc: e.location.isCedis == true ? "SI" : "NO"
+                        }
+                      }))
+                      console.log("datas",datas);
+                      setLoading2(false)
+                    })
+              
+                  } catch (error) {
+                    console.log(error)
+                  }
+              })
+              .catch((err) => 
+              console.log("Error en cargar archivo: ", err));
+          };
+        });
+      };
 
+      const actualizarConBase64 = (archivos) => {
+
+        Array.from(archivos).forEach((archivo) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(archivo);
+          reader.onload = () => {
+            let fileBase64 = [];
+            const base64 = reader.result;
+            // console.log(base64);
+            fileBase64 = base64.split(",");
+            // console.log(fileBase64[1]);
+        setLoading3(true)
+            axios
+            .post(
+                // "https://753e-108-175-15-104.ngrok.io/api/location/uploadExcel",
+                "http://108.175.15.104:8080/api/location/uploadExcel",
+                // "https://cors-anywhere.herokuapp.com/http://108.175.15.104:8080/api/location/uploadExcel",
+                {
+                  base64: fileBase64[1],
+                },
+                {
+                  headers: {
+                    Authorization: `${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+              .then((response) => {
+                try {
+                    APIs.getAllCities().then((data) => {
+                      setDatas(data.resultset.map((e) => {
+                        return {
+                          ...e,
+                          //active_visibility_desc: e.location.isCedis == true ? "SI" : "NO"
+                        }
+                      }))
+                      console.log("datas",datas);
+                      setLoading3(false)
+                    })
+              
+                  } catch (error) {
+                    console.log(error)
+                  }
+              })
+              .catch((err) => 
+              console.log("Error en cargar archivo: ", err));
+          };
+        });
+      };
+    
     const exportCSV = () => {
         dt.current.exportCSV();
     }
@@ -366,7 +477,22 @@ export default function UbicacionesM ()  {
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     }
-
+    const onCountryChange = (e) => {
+        setSelectedCountry(e.value);
+        console.log("testcountry", e.value);
+    }
+    const onCountryChange2 = (e) => {
+        setSelectedCountry2(e.value);
+        console.log("testcountry", e.value);
+    }
+    const onCountryChange3 = (e) => {
+        setSelectedCountry3(e.value);
+        console.log("testcountry", e.value);
+    }
+    const onCountryChange4 = (e) => {
+        setSelectedCountry4(e.value);
+        console.log("testcountry", e.value);
+    }
     const deleteSelectedProducts = () => {
         let _products = products.filter(val => !selectedProducts.includes(val));
         setProducts(_products);
@@ -389,8 +515,37 @@ export default function UbicacionesM ()  {
         return (
             <React.Fragment>
                 {/* <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar Archivo"  style={{marginRight:2}} onUpload={importCSV} /> */}
-                <Button label="Carga Masiva" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} />
-                <Button label="Carga Masiva Edicion" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)',marginRight:2}} />
+                <Button style={{ background: "#e8580e", color: "white",borderColor: 'rgba(0,0,0,0)',marginRight:2, width:150, height:36 }} 
+                loading={loading2} loadingOptions={{ position: 'right' }} 
+                htmlFor="xml_file_upload">
+                    <label htmlFor="xml_file_upload" style={{ cursor: "pointer" }}>
+                    Carga Masiva Alta
+                    </label>
+                </Button>
+                <input
+                    type="file"
+                    name="xml_file_upload"
+                    id="xml_file_upload"
+                    accept=".xls, .xlsx"
+                    style={{ display: "none" }}
+                    onChange={(e) => convertirBase64(e.target.files)}
+                />
+                
+                <Button style={{ background: "#e8580e", color: "white",borderColor: 'rgba(0,0,0,0)',marginRight:2, width:160, height:36 }} 
+                loading={loading3} loadingOptions={{ position: 'right' }} 
+                htmlFor="update_file_upload">
+                    <label htmlFor="update_file_upload" style={{ cursor: "pointer" }}>
+                    Carga Masiva Edición
+                    </label>
+                </Button>
+                <input
+                    type="file"
+                    name="update_file_upload"
+                    id="update_file_upload"
+                    accept=".xls, .xlsx"
+                    style={{ display: "none" }}
+                    onChange={(e) => actualizarConBase64(e.target.files)}
+                />
                 <Button label="Descargar" icon="pi pi-upload"  onClick={exportCSV} style={{backgroundColor:'#e8580e', color:'white',borderColor: 'rgba(0,0,0,0)'}} />
             </React.Fragment>
         )
@@ -445,7 +600,7 @@ export default function UbicacionesM ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -490,17 +645,103 @@ export default function UbicacionesM ()  {
 
             <Dialog visible={productDialog} style={{ width: '1000px' }} header="Detalles de la ubicacion" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div style={{width:'100%',background:'red', flexDirection:'row',alignItems:'center', display:'flex', justifyContent:'center'}}>
-                <div style={{width:'30%',background:'yellow' }}>
+                <div style={{width:'30%',background:'yellow', marginRight:4 }}>
                 <div className="field">
-                    <label htmlFor="Base">Departamento </label>
+                    <label htmlFor="Base">Base de cliente </label>
                     <InputText
                         value={value1}
                         onChange={e => setValue1(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value1 })} />
-                    {submitted && !value1 && <small className="p-error">Departamento es mandatorio.</small>}
+                    {submitted && !value1 && <small className="p-error">Base es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Cliente </label>
+                    <InputText
+                        value={value2}
+                        onChange={e => setValue2(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value2 })} />
+                    {submitted && !value2 && <small className="p-error">Cliente es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">ID Ubicacion </label>
+                    <InputText
+                        value={value3}
+                        onChange={e => setValue3(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value3 })} />
+                    {submitted && !value3 && <small className="p-error">ID es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Nombre de la ubicacion </label>
+                    <InputText
+                        value={value4}
+                        onChange={e => setValue4(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value4 })} />
+                    {submitted && !value4 && <small className="p-error">Nombre es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Estado, Provincia o Departamento </label>
+                    <Dropdown value={selectedCountry} options={datas} onChange={onCountryChange} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
+                    className={classNames({ 'p-invalid': submitted && !selectedCountry })}/>
+                    {submitted && !selectedCountry && <small className="p-error">Estado es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Ciudad</label>
+                    <Dropdown value={selectedCountry2} options={datas} onChange={onCountryChange2} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
+                    className={classNames({ 'p-invalid': submitted && !selectedCountry2 })}/>
+                    {submitted && !selectedCountry2 && <small className="p-error">Ciudad es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Codigo de la provincia </label>
+                    <Dropdown value={selectedCountry3} options={datas} onChange={onCountryChange3} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
+                    className={classNames({ 'p-invalid': submitted && !selectedCountry3 })}/>
+                    {submitted && !selectedCountry3 && <small className="p-error">codigo es obligatorio.</small>}
                 </div>
                 </div>
                 <div style={{width:'30%',background:'yellow' }}>
-                    <h1>test</h1>
+                <div className="field">
+                    <label htmlFor="Base">Latitud</label>
+                    <InputText
+                        value={value5}
+                        onChange={e => setValue5(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value5 })} />
+                    {submitted && !value5 && <small className="p-error">Latitud es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Longitud </label>
+                    <InputText
+                        value={value6}
+                        onChange={e => setValue6(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value6 })} />
+                    {submitted && !value6 && <small className="p-error">Longitud es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Zona1 </label>
+                    <InputText
+                        value={value7}
+                        onChange={e => setValue7(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value7 })} />
+                    {submitted && !value7 && <small className="p-error">Zona 1 es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Zona2 </label>
+                    <InputText
+                        value={value8}
+                        onChange={e => setValue8(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value8 })} />
+                    {submitted && !value8 && <small className="p-error">Zona 2 es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Zona3 </label>
+                    <InputText
+                        value={value9}
+                        onChange={e => setValue9(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value9 })} />
+                    {submitted && !value9 && <small className="p-error">Zona 3 es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Zona4 </label>
+                    <InputText
+                        value={value10}
+                        onChange={e => setValue10(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !value10 })} />
+                    {submitted && !value10 && <small className="p-error">Zona 4 es obligatorio.</small>}
+                </div>
+                <div className="field">
+                    <label htmlFor="Base">Zona horaria</label>
+                    <Dropdown value={selectedCountry4} options={datas} onChange={onCountryChange4} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
+                    className={classNames({ 'p-invalid': submitted && !selectedCountry4 })}/>
+                    {submitted && !selectedCountry4 && <small className="p-error">Zona es obligatorio.</small>}
+                </div>
                 </div>
                 <div style={{width:'30%',background:'yellow' }}>
                     <h1>test</h1>

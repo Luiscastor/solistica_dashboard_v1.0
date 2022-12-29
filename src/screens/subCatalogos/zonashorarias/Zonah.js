@@ -44,6 +44,7 @@ export default function ZonasH ()  {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+    const [detalle, setDetalle] = useState(null);
 
 
 
@@ -70,6 +71,7 @@ export default function ZonasH ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -188,6 +190,7 @@ export default function ZonasH ()  {
     const editProduct = (product) => {
         setCiudad(product.timeZoneName)
         setPaisId(product.timeZoneId)
+        setDetalle(false)
         setAbreviacion(product.abbreviationCode)
         setRango(product.utcNumberHours)
         console.log('test',product);
@@ -379,7 +382,7 @@ export default function ZonasH ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -408,27 +411,27 @@ export default function ZonasH ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nueva Zona Horaria" : "Editar Zona Horaria"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Base">Nombre de la zona</label>
                     <InputText
                         value={ciudad}
                         onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">nombre es mandatorio.</small>}
+                    {submitted && !ciudad && <small className="p-error">nombre es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Nombre">Abreviatura de la zona</label>
                     <InputText
                         value={abreviacion}
                         onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Abreviatura es mandatorio.</small>}
+                    {submitted && !abreviacion && <small className="p-error">Abreviatura es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Horario en UTC </label>
                     <InputText
                         value={rango}
                         onChange={e => setRango(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !rango })} />
-                    {submitted && !rango && <small className="p-error">Horario es mandatorio.</small>}
+                    {submitted && !rango && <small className="p-error">Horario es obligatorio.</small>}
                 </div>
             </Dialog>
 

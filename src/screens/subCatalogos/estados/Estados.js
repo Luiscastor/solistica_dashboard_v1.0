@@ -55,6 +55,7 @@ export default function Estados ()  {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+    const [detalle, setDetalle] = useState(null);
 
 
     useEffect(() => {
@@ -93,6 +94,7 @@ export default function Estados ()  {
 
     const openNew = () => {
         setSubmitted(false);
+        setDetalle(true)
         setProductDialog(true);
     }
 
@@ -208,10 +210,12 @@ export default function Estados ()  {
     }
 
     const editProduct = (product) => {
-        
+        setDetalle(false)
         setPais(product.stateName)
         setAbreviacion(product.stateCode)
         setPaisId(product.stateId)
+        setSelectedCountry(product.country.countryId)
+        console.log("test",product.country);
         setEdit(true)
         setProductDialog(true);
     }
@@ -225,10 +229,7 @@ export default function Estados ()  {
 
     const deleteProduct = () => {
         const newCountry ={
-            country: selectedCountry,
             stateId: paisId,
-            stateCode: "hardcode",
-            stateName: "hardcode",
             enabled: true
           };
             try{
@@ -241,7 +242,7 @@ export default function Estados ()  {
                     setCargar(false)
                     setDeleteProductDialog(false);
                         try {
-                            APIs.getAllPaises().then((data) => {
+                            APIs.getAllStates().then((data) => {
                               setDatas(data.resultset.map((e) => {
                                 return {
                                   ...e,
@@ -347,7 +348,7 @@ export default function Estados ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -375,27 +376,27 @@ export default function Estados ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del estado" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo Estado" : "Editar Estado"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
-                    <label htmlFor="Pais">Pais - Ejemplo: Nuevo Leon</label>
-                    <Dropdown value={selectedCountry} options={datas} onChange={onCountryChange} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais"
+                    <label htmlFor="Pais">Pais - Ejemplo: Mexico</label>
+                    <Dropdown value={selectedCountry} options={datas} onChange={onCountryChange} required autoFocus optionLabel="countryName" filter showClear filterBy="countryName" placeholder="Selecciona un pais" id="countryId"
                     className={classNames({ 'p-invalid': submitted && !selectedCountry })}/>
                     
-                    {submitted && !selectedCountry && <small className="p-error">Pais es mandatorio.</small>}
+                    {submitted && !selectedCountry && <small className="p-error">Pais es obligatorio.</small>}
                 </div>
                 <div className="field">
-                    <label htmlFor="Pais">Estado - Ejemplo: México</label>
+                    <label htmlFor="Pais">Estado - Ejemplo: Nuevo Leon</label>
                     <InputText
                         value={pais}
                         onChange={e => setPais(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !pais })} />
-                    {submitted && !pais && <small className="p-error">Estado es mandatorio.</small>}
+                    {submitted && !pais && <small className="p-error">Estado es obligatorio.</small>}
                 </div>
                 <div className="field">
-                    <label htmlFor="Pais">Abreviación - Ejemplo: MEX</label> 
+                    <label htmlFor="Pais">Abreviación - Ejemplo: NL</label> 
                     <InputText
                         value={abreviacion}
                         onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Abreviacion es mandatorio.</small>}
+                    {submitted && !abreviacion && <small className="p-error">Abreviacion es obligatorio.</small>}
                 </div>
             </Dialog>
 

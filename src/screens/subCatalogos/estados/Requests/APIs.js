@@ -21,7 +21,7 @@ const getAllPaises = async () => {
     enabled,
     }) => {
       const tokenApp = window.localStorage.getItem('token') 
-      const {data: res} = await axios.patch(`${baseUrl}/state/update`,{ 
+      const {data: res} = await axios.patch(`${baseUrl}/state/update/enabled`,{ 
         country,
         stateId, 
         stateCode,

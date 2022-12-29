@@ -50,6 +50,7 @@ const drawerWidth = 240;
 
 export default function Dashboard({children}) {
   const [open2, setOpen2] = useState(true);
+  const tokenApp = window.localStorage.getItem('distribucion')
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -84,7 +85,7 @@ export default function Dashboard({children}) {
               <MenuIcon />
             </IconButton>
             <div style={{height:'100%', width:'100%'}}>
-              <h1></h1>
+              <h5>distribucion: {tokenApp}</h5>
             </div>
             <IconButton
               edge="end"
@@ -168,11 +169,17 @@ export default function Dashboard({children}) {
             </ListItemIcon>
             <ListItemText primary="Zonas horarias" color="secondary" onClick={()=>{history.push('/zonasH')}}/>
           </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <AccessTimeIcon color="secondary"/>
+            </ListItemIcon>
+            <ListItemText primary="Coorporaciones" color="secondary" onClick={()=>{history.push('/corporaciones')}}/>
+          </ListItemButton>
         </List>
       </Collapse>
     <ListItemButton>
       <ListItemIcon>
-        <ShoppingCartIcon color="secondary"/>
+        <PlaceIcon color="secondary"/>
       </ListItemIcon>
       <ListItemText color="secondary" primary="Ubicaciones" onClick={()=>{history.push('/ubicacionesm')}}/>
     </ListItemButton>
@@ -180,7 +187,7 @@ export default function Dashboard({children}) {
       <ListItemIcon>
         <PeopleIcon color="secondary"/>
       </ListItemIcon>
-      <ListItemText color="secondary" primary="Panel de errores" />
+      <ListItemText color="secondary" primary="Panel de errores" onClick={()=>{history.push('/panel')}}/>
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
@@ -209,7 +216,7 @@ export default function Dashboard({children}) {
           }}
         >
           <Toolbar />
-          <main style={{width:'98%', height:'90%',marginLeft:20}}>
+          <main style={{width:'98%', height:'90%',marginLeft:20, }}>
             {children}
           </main>
         </Box>

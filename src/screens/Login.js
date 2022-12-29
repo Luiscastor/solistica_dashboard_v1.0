@@ -14,6 +14,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import { useHistory } from 'react-router-dom'
 import RequestLogin from '../APIs/APIs'
 import axios from "axios";
+
+import image from '../assets/bg_circulos.gif'
 const theme = createTheme({
   palette: {
     secondary: {
@@ -70,7 +72,7 @@ export default function App() {
 
   return (
     
-<div className='container'>
+<div className='container' style={{ backgroundImage: `url(${image})`,}}>
       <div style={{alignItems:"center",display:"flex", width:"100%", height:"100vh",justifyContent:"center"}}>
       <ThemeProvider theme={theme}>
       <Card sx={{ width: 400, height: 450, borderRadius: 5 }}>

@@ -33,6 +33,7 @@ export default function Clientes ()  {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [deleteCountry, setDeleteCountry] = useState(null);
     const [paisId, setPaisId] = useState();
+    const [detalle, setDetalle] = useState(null);
     const [abreviacion, setAbreviacion] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -68,6 +69,7 @@ export default function Clientes ()  {
     // }
 
     const openNew = () => {
+        setDetalle(true)
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -93,8 +95,8 @@ export default function Clientes ()  {
     const saveProduct = () => {
         setSubmitted(true);
         const newCountry ={
-            customerName: ciudad,
-            customerBase: abreviacion,
+            customerName: abreviacion,
+            customerBase: ciudad,
             customerRadio: rango,
             enabled: true
           };
@@ -119,6 +121,7 @@ export default function Clientes ()  {
                               setCiudad("")
                               setSelectedCountry(null)
                               setAbreviacion("")
+                              setRango(null)
                             })
                       
                           } catch (error) {
@@ -138,8 +141,8 @@ export default function Clientes ()  {
         setSubmitted(true);
         const newCountry ={
             customerId: paisId,
-            customerName: ciudad,
-            customerBase: abreviacion,
+            customerName: abreviacion,
+            customerBase: ciudad,
             customerRadio: rango,
             enabled: true
           };
@@ -183,10 +186,11 @@ export default function Clientes ()  {
     }
 
     const editProduct = (product) => {
-        setCiudad(product.customerName)
+        setCiudad(product.customerBase)
         setPaisId(product.customerId)
-        setAbreviacion(product.customerBase)
+        setAbreviacion(product.customerName)
         setRango(product.customerRadio)
+        setDetalle(false)
         console.log('test',product);
         setEdit(true)
         setProductDialog(true);
@@ -376,7 +380,7 @@ export default function Clientes ()  {
     const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} style={{backgroundColor:'#202c52', color:'white'}} />
-            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'red', color:'white'}}/>
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} loading={cargar} loadingOptions={{ position: 'right' }} style={{backgroundColor:'#e8580e', color:'white'}}/>
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -405,26 +409,26 @@ export default function Clientes ()  {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '450px' }} header="Detalles del cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            <Dialog visible={productDialog} style={{ width: '450px' }} header={detalle ? "Nuevo Cliente" : "Editar Cliente"} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="Base">Base de cliente</label>
                     <InputText
                         value={ciudad}
                         onChange={e => setCiudad(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !ciudad })} />
-                    {submitted && !ciudad && <small className="p-error">Base es mandatorio.</small>}
+                    {submitted && !ciudad && <small className="p-error">Base es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Nombre">Nombre de cliente</label>
                     <InputText
                         value={abreviacion}
                         onChange={e => setAbreviacion(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !abreviacion })} />
-                    {submitted && !abreviacion && <small className="p-error">Nombre es mandatorio.</small>}
+                    {submitted && !abreviacion && <small className="p-error">Nombre es obligatorio.</small>}
                 </div>
                 <div className="field">
                     <label htmlFor="Rango">Radio de tolerancia (mts) </label>
                     <InputNumber inputId="inputnumber" className={classNames({ 'p-invalid': submitted && !rango })}
                      value={rango} onChange={(e) => setRango(e.value)} />
-                    {submitted && !rango && <small className="p-error">Rango es mandatorio.</small>}
+                    {submitted && !rango && <small className="p-error">Rango es obligatorio.</small>}
                 </div>
             </Dialog>
 

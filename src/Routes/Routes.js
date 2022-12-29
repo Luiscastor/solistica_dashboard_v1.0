@@ -10,6 +10,8 @@ import Impuestos from '../screens/subCatalogos/impuestos/Impuestos'
 import Ubicaciones from '../screens/subCatalogos/ubicaciones/Ubicaciones'
 import ZonasH from '../screens/subCatalogos/zonashorarias/Zonah'
 import UbicacionesM from '../screens/ubicaciones/ubicaciones';
+import Panel from '../screens/panel/panel';
+import Corporacion from '../screens/subCatalogos/corporacion/Corporacion';
 
 function App() {
     return (
@@ -26,7 +28,9 @@ function App() {
         <Route exact path='/clientes'> <Clientes/> </Route>
         <Route exact path='/zonasH'> <ZonasH/> </Route>
         <Route exact path='/usuarios'> <Contactos/> </Route>
+        <Route exact path='/panel'> <Panel/> </Route>
         <Route exact path='/ubicacionesm'> <UbicacionesM/> </Route>
+        <Route exact path='/corporaciones'> <Corporacion/> </Route>
         </Dashboard>
         </Switch>
     </Router>
